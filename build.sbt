@@ -10,7 +10,9 @@ libraryDependencies ++= Seq(jdbc, cache, ws, specs2 % Test)
 
 libraryDependencies ++= Seq(
   "org.webjars.bower" % "bootstrap-sass" % "3.3.6",
-  "org.webjars" % "jquery" % "2.1.3"
+  "org.webjars" % "jquery" % "2.1.3",
+  "org.postgresql" % "postgresql" % "9.4-1206-jdbc42",
+  "com.typesafe.play" %% "play-slick" % "2.0.0"
 )
 
 unmanagedResourceDirectories in Test <+=  baseDirectory ( _ /"target/web/public/test" )  
