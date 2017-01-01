@@ -12,4 +12,5 @@ unmanagedResourceDirectories in Test <+=  baseDirectory ( _ /"target/web/public/
 
 resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases"
 
+// if localhost has a lot of cookies
 PlayKeys.devSettings := Seq("play.server.netty.maxHeaderSize" -> "16384")
