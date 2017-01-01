@@ -8,7 +8,10 @@ scalaVersion := "2.11.7"
 
 libraryDependencies ++= Seq(jdbc, cache, ws, specs2 % Test)
 
-libraryDependencies += "org.webjars.bower" % "bootstrap-sass" % "3.3.6"
+libraryDependencies ++= Seq(
+  "org.webjars.bower" % "bootstrap-sass" % "3.3.6",
+  "org.webjars" % "jquery" % "2.1.3"
+)
 
 unmanagedResourceDirectories in Test <+=  baseDirectory ( _ /"target/web/public/test" )  
 

@@ -1,5 +1,8 @@
 @(message: String)
 
 @main("Welcome to Play") {
-    @message
+    <button id="hello_world" type="button" class="btn btn-default" data-toggle="tooltip" data-placement="right" title="Tooltip">
+        @message
+    </button>
+    <script>$('#hello_world').tooltip({})</script>
 }
