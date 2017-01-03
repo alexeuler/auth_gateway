@@ -20,7 +20,11 @@ case class User(
 class Users @Inject()(protected val dbConfigProvider: DatabaseConfigProvider) extends HasDatabaseConfigProvider[JdbcProfile] {
   import driver.api._
 
-  private class UsersReadTable(tag: Tag) extends Table[User](tag, "users") {
+  def create(user: User): Future[Long] = db.run(usersCreate(user))
+  def all: Future[Seq[User]] = db.run(users.result)
+  def find(id: Long): Future[Option[User]] = db.run(userWithId(id).result.headOption)
+
+  private class UsersTable(tag: Tag) extends Table[User](tag, "users") {
     def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
     def email = column[String]("email")
     def password = column[String]("password")
@@ -29,17 +33,11 @@ class Users @Inject()(protected val dbConfigProvider: DatabaseConfigProvider) ex
     override def * = (id.?, email, password, createdAt.?, updatedAt.?) <> (User.tupled, User.unapply)
   }
 
-  private class UsersWriteTable(tag: Tag) extends Table[(String, String)](tag, "users") {
-    def email = column[String]("email")
-    def password = column[String]("password")
-    override def * = (email, password)
+  private val users = TableQuery[UsersTable]
+  private val userWithId = (id: Long) => for (user <- users; if user.id === id) yield { user }
+  private val usersCreate = (user: User) => {
+    val now = Some(new Timestamp(new Date().getTime))
+    val userWithTimestamp = user.copy(createdAt = now, updatedAt = now)
+    (users returning users.map(_.id)) += userWithTimestamp
   }
-
-  def all: Future[Seq[User]] = db.run(usersReadQuery.result)
-  def create(user: User): Future[(String, String)] = db.run(usersWriteQuery returning usersWriteQuery += (user.email, user.password))
-  def find(id: Long): Future[Option[User]] = db.run(usersWithIdQuery(id).result.headOption)
-
-  private val usersReadQuery = TableQuery[UsersReadTable]
-  private val usersWriteQuery = TableQuery[UsersWriteTable]
-  private val usersWithIdQuery = (id: Long) => for (user <- usersReadQuery; if user.id === id) yield { user }
 }
