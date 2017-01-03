@@ -11,9 +11,9 @@ import slick.lifted.Tag
 import scala.concurrent.Future
 
 case class User(
-                 override val id: Option[Long],
-                 override val createdAt: Option[Timestamp],
-                 override val updatedAt: Option[Timestamp],
+                 override val id: Option[Long] = None,
+                 override val createdAt: Option[Timestamp] = None,
+                 override val updatedAt: Option[Timestamp] = None,
                  email: String,
                  password: String) extends Model[User] {
 
@@ -22,6 +22,7 @@ case class User(
                               updatedAt: Option[Timestamp]
                             ): User = this.copy(createdAt = createdAt, updatedAt = updatedAt)
 }
+
 
 class Users @Inject()(override val dbConfigProvider: DatabaseConfigProvider) extends Models[User](dbConfigProvider = dbConfigProvider) {
   import driver.api._
@@ -32,7 +33,12 @@ class Users @Inject()(override val dbConfigProvider: DatabaseConfigProvider) ext
     override def * = (id.?, createdAt.?, updatedAt.?, email, password) <> (User.tupled, User.unapply)
   }
 
-  override val allQuery[UserTable]: TableQuery[UserTable] = TableQuery[UserTable]
+  class UserQueries extends Queries[UserTable] {
+    override def allQuery = TableQuery[UserTable]
+  }
+
+  val queries = new UserQueries
+
 }
 
 
