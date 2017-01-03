@@ -33,7 +33,7 @@ abstract class Models[T <: Model[T]] @Inject()(protected val dbConfigProvider: D
     def find(id: Long): Future[Option[T]] = db.run(filterQuery(id).result.headOption)
     def create(entity: T): Future[Long] = db.run(createQuery(entity))
 
-    def allQuery: TableQuery[U]
+    protected def allQuery: TableQuery[U]
     private val filterQuery = (id: Long) => for (entity <- allQuery; if entity.id === id) yield { entity }
     private val createQuery = (entity: T) => {
       val now = Some(new Timestamp(new Date().getTime))

@@ -7,9 +7,9 @@ import play.api.mvc._
 
 import scala.concurrent.ExecutionContext
 
-class Sessions @Inject()(usersRepo: Users)(implicit exec: ExecutionContext) extends Controller {
+class Sessions @Inject()(users: Users)(implicit exec: ExecutionContext) extends Controller {
   def make = Action.async {
-    for (user <- usersRepo.queries.create(User(email = "123@gmail.com", password = "123"))) yield {
+    for (user <- users.queries.create(User(email = "123@gmail.com", password = "123"))) yield {
       Ok(views.html.sessions.make())
     }
 //    for (users <- usersRepo.all; count = users.size) yield {
