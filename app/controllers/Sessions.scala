@@ -1,24 +1,14 @@
 package controllers
 
 import com.google.inject.Inject
-import models.{User, Users}
+import models.{User, UserRepo}
 import play.api._
 import play.api.mvc._
 
 import scala.concurrent.ExecutionContext
 
-class Sessions @Inject()(users: Users)(implicit exec: ExecutionContext) extends Controller {
-  def make = Action.async {
-    for (user <- users.queries.create(User(email = "123@gmail.com", password = "123"))) yield {
+class Sessions @Inject()(userRepo: UserRepo)(implicit exec: ExecutionContext) extends Controller {
+  def make = Action {
       Ok(views.html.sessions.make())
-    }
-//    for (users <- usersRepo.all; count = users.size) yield {
-//      if (count == 0) {
-//        for (user <- usersRepo.create(User(email = "123@gmail.com", password = "123"))) yield {
-//          val a = 1
-//        }
-//      }
-//      Ok(views.html.sessions.make())
-//    }
   }
 }
