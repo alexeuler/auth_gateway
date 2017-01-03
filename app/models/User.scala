@@ -1,14 +1,9 @@
 package models
 
 import java.sql.Timestamp
-import java.util.Date
 
 import com.google.inject.Inject
-import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
-import slick.driver.JdbcProfile
-import slick.lifted.Tag
-
-import scala.concurrent.Future
+import play.api.db.slick.DatabaseConfigProvider
 
 case class User(
                  override val id: Option[Long] = None,

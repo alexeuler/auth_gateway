@@ -6,9 +6,6 @@ import java.util.Date
 import com.google.inject.Inject
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.driver.JdbcProfile
-import slick.profile.RelationalTableComponent
-import slick.lifted.{AbstractTable, ProvenShape}
-
 import scala.concurrent.Future
 
 abstract class Model[T] {
