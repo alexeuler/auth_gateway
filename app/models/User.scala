@@ -28,17 +28,13 @@ case class User(id: Long = 0L,
 class UserRepo @Inject()(override val dbConfigProvider: DatabaseConfigProvider)(implicit exec: ExecutionContext) extends ModelRepo[User](dbConfigProvider = dbConfigProvider) {
   import driver.api._
 
-  class UserTable(tag: Tag) extends Table[User](tag, "users") with ModelTable[User] {
-    def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
-    def createdAt = column[Timestamp]("created_at", O.AutoInc)
-    def updatedAt = column[Timestamp]("updated_at", O.AutoInc)
+  class ModelTable(tag: Tag) extends BasicTable(tag, "users") {
     def email = column[String]("email")
     def password = column[String]("password")
     override def * = (id, createdAt, updatedAt, email, password) <> ((User.apply _).tupled, User.unapply)
   }
-  type U = UserTable
 
-  override def modelsQuery = TableQuery[UserTable]
+  override def modelsQuery = TableQuery[ModelTable]
 
 //  overriddef modelsQuery: TableQuery[UserTable] = TableQuery[UserTable]
 

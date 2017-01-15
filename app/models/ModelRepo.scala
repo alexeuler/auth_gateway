@@ -10,30 +10,21 @@ import slick.lifted.{AbstractTable, Rep}
 
 import scala.concurrent.Future
 
-trait ModelTable[T] extends AbstractTable[T] {
-  def id: Rep[Long]
-  def createdAt: Rep[Timestamp]
-  def updatedAt: Rep[Timestamp]
-}
-
-// Todo adhoc polymorphism
-// import slick.driver.JdbcProfile to make Table accessible?
-// Or make ModelTable depend on dbConfigProvider?
 abstract class ModelRepo[T] @Inject()(protected val dbConfigProvider: DatabaseConfigProvider) extends HasDatabaseConfigProvider[JdbcProfile] {
 
   import driver.api._
 
-  abstract class ModelTableImpl(tag: Tag, name: String) extends Table[T](tag, name) with ModelTable[T] {
+  abstract class BasicTable(tag: Tag, name: String) extends Table[T](tag, name) {
     def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
     def createdAt = column[Timestamp]("created_at", O.AutoInc)
     def updatedAt = column[Timestamp]("updated_at", O.AutoInc)
   }
 
-  type U <: ModelTable[T]
+  type ModelTable <: BasicTable
 //
-  def modelsQuery: TableQuery[U]
+  def modelsQuery: TableQuery[ModelTable]
   def find(id: Long): Future[Option[T]] = db.run(filteredQuery(id).result.headOption)
-  def filteredQuery(id: Long): Query[U, T, Seq] = for (entity <- modelsQuery; if entity.id === id) yield { entity }
+  def filteredQuery(id: Long): Query[ModelTable, T, Seq] = for (entity <- modelsQuery; if entity.id === id) yield { entity }
 
 
 //  abstract class Queries[U <: ModelTable] {
