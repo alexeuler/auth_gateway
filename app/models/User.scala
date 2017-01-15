@@ -30,6 +30,7 @@ class UserRepo @Inject()(override val dbConfigProvider: DatabaseConfigProvider)
     override def * = (id, createdAt, updatedAt, email, password) <> ((User.apply _).tupled, User.unapply)
   }
 
-  override def modelsQuery = TableQuery[ModelTable]
+  override def query = TableQuery[ModelTable]
+
 
 }
