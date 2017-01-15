@@ -8,14 +8,8 @@ import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.driver.JdbcProfile
 import scala.concurrent.Future
 
-abstract class Model {
-  def id: Long = 0L
-  def createdAt: Timestamp = new Timestamp(0L)
-  def updatedAt: Timestamp = new Timestamp(0L)
-}
-
 // Todo adhoc polymorphism
-abstract class Models[T <: Model] @Inject()(protected val dbConfigProvider: DatabaseConfigProvider) extends HasDatabaseConfigProvider[JdbcProfile] {
+abstract class Models[T] @Inject()(protected val dbConfigProvider: DatabaseConfigProvider) extends HasDatabaseConfigProvider[JdbcProfile] {
 
   import driver.api._
 

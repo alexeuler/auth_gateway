@@ -17,12 +17,11 @@ object User {
 }
 
 
-case class User(
-                 override val id: Long = 0L,
-                 override val createdAt: Timestamp = new Timestamp(0L),
-                 override val updatedAt: Timestamp = new Timestamp(0L),
-                 email: String,
-                 password: String) extends Model
+case class User(id: Long = 0L,
+                createdAt: Timestamp = new Timestamp(0L),
+                updatedAt: Timestamp = new Timestamp(0L),
+                email: String,
+                password: String)
 
 class UserRepo @Inject()(override val dbConfigProvider: DatabaseConfigProvider)(implicit exec: ExecutionContext) extends Models[User](dbConfigProvider = dbConfigProvider) {
   import driver.api._
