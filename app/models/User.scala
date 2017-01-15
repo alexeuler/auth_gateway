@@ -21,16 +21,15 @@ case class User(id: Long = 0L,
                 password: String)
 
 class UserRepo @Inject()(override val dbConfigProvider: DatabaseConfigProvider)
-  extends ModelRepo[User](dbConfigProvider) {
+  extends BaseRepo[User](dbConfigProvider) {
   import driver.api._
 
-  class ModelTable(tag: Tag) extends BasicTable(tag, "users") {
+  class EntityTable(tag: Tag) extends BaseTable(tag, "users") {
     def email = column[String]("email")
     def password = column[String]("password")
     override def * = (id, createdAt, updatedAt, email, password) <> ((User.apply _).tupled, User.unapply)
   }
 
-  override def query = TableQuery[ModelTable]
-
+  override def query = TableQuery[EntityTable]
 
 }
