@@ -8,34 +8,30 @@ import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.driver.JdbcProfile
 import scala.concurrent.Future
 
-abstract class Model[T] {
-  def id: Option[Long] = None
-  def createdAt: Option[Timestamp] = None
-  def updatedAt: Option[Timestamp] = None
-  def setTimeStamps(createdAt: Option[Timestamp], updatedAt: Option[Timestamp]): T
+abstract class Model {
+  def id: Long = 0L
+  def createdAt: Timestamp = new Timestamp(0L)
+  def updatedAt: Timestamp = new Timestamp(0L)
 }
 
-abstract class Models[T <: Model[T]] @Inject()(protected val dbConfigProvider: DatabaseConfigProvider) extends HasDatabaseConfigProvider[JdbcProfile] {
+// Todo adhoc polymorphism
+abstract class Models[T <: Model] @Inject()(protected val dbConfigProvider: DatabaseConfigProvider) extends HasDatabaseConfigProvider[JdbcProfile] {
 
   import driver.api._
 
   abstract class ModelTable(tag: Tag, name: String) extends Table[T](tag, name) {
     def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
-    def createdAt = column[Timestamp]("created_at")
-    def updatedAt = column[Timestamp]("updated_at")
+    def createdAt = column[Timestamp]("created_at", O.AutoInc)
+    def updatedAt = column[Timestamp]("updated_at", O.AutoInc)
   }
 
   abstract class Queries[U <: ModelTable] {
-    def all: Future[Seq[T]] = db.run(allQuery.result)
+    def all: Future[Seq[T]] = db.run(modelsQuery.result)
     def find(id: Long): Future[Option[T]] = db.run(filterQuery(id).result.headOption)
     def create(entity: T): Future[Long] = db.run(createQuery(entity))
 
-    protected def allQuery: TableQuery[U]
-    private val filterQuery = (id: Long) => for (entity <- allQuery; if entity.id === id) yield { entity }
-    private val createQuery = (entity: T) => {
-      val now = Some(new Timestamp(new Date().getTime))
-      val entityWithTimestamp: T = entity.setTimeStamps(now, now)
-      (allQuery returning allQuery.map(_.id)) += entityWithTimestamp
-    }
+    protected def modelsQuery: TableQuery[U]
+    private val filterQuery = (id: Long) => for (entity <- modelsQuery; if entity.id === id) yield { entity }
+    private val createQuery = (entity: T) => modelsQuery returning modelsQuery.map(_.id) += entity
   }
 }

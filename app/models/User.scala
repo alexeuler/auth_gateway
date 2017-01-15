@@ -18,21 +18,11 @@ object User {
 
 
 case class User(
-                 override val id: Option[Long],
-                 override val createdAt: Option[Timestamp],
-                 override val updatedAt: Option[Timestamp],
+                 override val id: Long = 0L,
+                 override val createdAt: Timestamp = new Timestamp(0L),
+                 override val updatedAt: Timestamp = new Timestamp(0L),
                  email: String,
-                 password: String) extends Model[User] {
-
-  override def setTimeStamps(
-                              createdAt: Option[Timestamp],
-                              updatedAt: Option[Timestamp]
-                            ): User = this.copy(createdAt = createdAt, updatedAt = updatedAt)
-
-  def this(email: String, password: String) = this(None, None, None, email, User.md5(password))
-  def hasPassword(pass: String): Boolean = User.md5(pass) == password
-
-}
+                 password: String) extends Model
 
 class UserRepo @Inject()(override val dbConfigProvider: DatabaseConfigProvider)(implicit exec: ExecutionContext) extends Models[User](dbConfigProvider = dbConfigProvider) {
   import driver.api._
@@ -40,15 +30,12 @@ class UserRepo @Inject()(override val dbConfigProvider: DatabaseConfigProvider)(
   class UserTable(tag: Tag) extends ModelTable(tag, "users") {
     def email = column[String]("email")
     def password = column[String]("password")
-    override def * = (id.?, createdAt.?, updatedAt.?, email, password) <> ((User.apply _).tupled, User.unapply)
+    override def * = (id, createdAt, updatedAt, email, password) <> ((User.apply _).tupled, User.unapply)
   }
 
   object queries extends Queries[UserTable] {
-    def findByCredentials(email: String, password: String): Future[Option[User]] =
-      db.run(filterByEmailQuery(email).result.map(_.find(_.hasPassword(password))))
-
-    override def allQuery: TableQuery[UserTable] = TableQuery[UserTable]
+    override def modelsQuery: TableQuery[UserTable] = TableQuery[UserTable]
     private val filterByEmailQuery = (email: String) =>
-      for (user <- allQuery; if user.email === email) yield user
+      for (user <- modelsQuery; if user.email === email) yield user
   }
 }
