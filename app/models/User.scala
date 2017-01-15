@@ -7,8 +7,6 @@ import com.google.common.io.BaseEncoding
 import com.google.inject.Inject
 import play.api.db.slick.DatabaseConfigProvider
 
-import scala.concurrent.{ExecutionContext, Future}
-
 object User {
   private def md5(s: String): String = {
     val bytes = MessageDigest.getInstance("MD5").digest(s.getBytes("UTF-8"))
@@ -16,16 +14,14 @@ object User {
   }
 }
 
-
 case class User(id: Long = 0L,
                 createdAt: Timestamp = new Timestamp(0L),
                 updatedAt: Timestamp = new Timestamp(0L),
                 email: String,
                 password: String)
 
-
-
-class UserRepo @Inject()(override val dbConfigProvider: DatabaseConfigProvider)(implicit exec: ExecutionContext) extends ModelRepo[User](dbConfigProvider = dbConfigProvider) {
+class UserRepo @Inject()(override val dbConfigProvider: DatabaseConfigProvider)
+  extends ModelRepo[User](dbConfigProvider) {
   import driver.api._
 
   class ModelTable(tag: Tag) extends BasicTable(tag, "users") {
@@ -35,14 +31,5 @@ class UserRepo @Inject()(override val dbConfigProvider: DatabaseConfigProvider)(
   }
 
   override def modelsQuery = TableQuery[ModelTable]
-
-//  overriddef modelsQuery: TableQuery[UserTable] = TableQuery[UserTable]
-
-//  object queries extends Queries[UserTable] {
-//    override def modelsQuery: TableQuery[UserTable] = TableQuery[UserTable]
-//    private val filterByEmailQuery = (email: String) =>
-//      for (user <- modelsQuery; if user.email === email) yield user
-//  }
-  //
 
 }

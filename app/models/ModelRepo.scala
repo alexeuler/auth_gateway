@@ -1,16 +1,14 @@
 package models
 
 import java.sql.Timestamp
-import java.util.Date
 
-import com.google.inject.Inject
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.driver.JdbcProfile
-import slick.lifted.{AbstractTable, Rep}
 
 import scala.concurrent.Future
 
-abstract class ModelRepo[T] @Inject()(protected val dbConfigProvider: DatabaseConfigProvider) extends HasDatabaseConfigProvider[JdbcProfile] {
+abstract class ModelRepo[T](protected val dbConfigProvider: DatabaseConfigProvider)
+  extends HasDatabaseConfigProvider[JdbcProfile] {
 
   import driver.api._
 
@@ -21,7 +19,7 @@ abstract class ModelRepo[T] @Inject()(protected val dbConfigProvider: DatabaseCo
   }
 
   type ModelTable <: BasicTable
-//
+
   def modelsQuery: TableQuery[ModelTable]
   def find(id: Long): Future[Option[T]] = db.run(filteredQuery(id).result.headOption)
   def filteredQuery(id: Long): Query[ModelTable, T, Seq] = for (entity <- modelsQuery; if entity.id === id) yield { entity }
