@@ -37,8 +37,9 @@ class Sessions @Inject()(userRepo: UserRepo)(implicit exec: ExecutionContext) ex
 //  }
 
   def make = Action.async {
-    for (user <- userRepo.queries.create(User(email = "123@gmail.com", password = "123"))) yield {
-      Ok(views.html.sessions.make())
+    for (user <- userRepo.find(1L)) yield {
+      Ok(user.toString)
+//      Ok(views.html.sessions.make())
     }
 //    for (users <- userRepo.queries.all) yield {
 //      Ok(users.toString())

@@ -23,18 +23,30 @@ case class User(id: Long = 0L,
                 email: String,
                 password: String)
 
-class UserRepo @Inject()(override val dbConfigProvider: DatabaseConfigProvider)(implicit exec: ExecutionContext) extends Models[User](dbConfigProvider = dbConfigProvider) {
+
+
+class UserRepo @Inject()(override val dbConfigProvider: DatabaseConfigProvider)(implicit exec: ExecutionContext) extends ModelRepo[User](dbConfigProvider = dbConfigProvider) {
   import driver.api._
 
-  class UserTable(tag: Tag) extends ModelTable(tag, "users") {
+  class UserTable(tag: Tag) extends Table[User](tag, "users") with ModelTable[User] {
+    def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
+    def createdAt = column[Timestamp]("created_at", O.AutoInc)
+    def updatedAt = column[Timestamp]("updated_at", O.AutoInc)
     def email = column[String]("email")
     def password = column[String]("password")
     override def * = (id, createdAt, updatedAt, email, password) <> ((User.apply _).tupled, User.unapply)
   }
+  type U = UserTable
 
-  object queries extends Queries[UserTable] {
-    override def modelsQuery: TableQuery[UserTable] = TableQuery[UserTable]
-    private val filterByEmailQuery = (email: String) =>
-      for (user <- modelsQuery; if user.email === email) yield user
-  }
+  override def modelsQuery = TableQuery[UserTable]
+
+//  overriddef modelsQuery: TableQuery[UserTable] = TableQuery[UserTable]
+
+//  object queries extends Queries[UserTable] {
+//    override def modelsQuery: TableQuery[UserTable] = TableQuery[UserTable]
+//    private val filterByEmailQuery = (email: String) =>
+//      for (user <- modelsQuery; if user.email === email) yield user
+//  }
+  //
+
 }
