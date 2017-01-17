@@ -1,0 +1,6 @@
+@(elements: helper.FieldElements)
+
+<div class="form-group @if(elements.hasErrors) {has-error}">
+    <label for="@elements.id">@elements.label.toString.capitalize</label>
+    @elements.input
+</div>
