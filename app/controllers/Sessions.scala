@@ -21,7 +21,9 @@ class Sessions @Inject()(userRepo: UserRepo, val messagesApi: MessagesApi)(impli
   def create = Action.async { implicit request =>
     userForm.bindFromRequest().fold(
       formWithErrors => {
-        Future { Ok(views.html.sessions.make(formWithErrors)) }
+        Future {
+          Ok(views.html.sessions.make(formWithErrors))
+        }
       },
       userData => {
         Future { Ok(views.html.sessions.make(userForm)) }
@@ -30,6 +32,6 @@ class Sessions @Inject()(userRepo: UserRepo, val messagesApi: MessagesApi)(impli
   }
 
   def make = Action { implicit request =>
-    Ok(views.html.sessions.make(userForm))
+    Ok(views.html.sessions.make(userForm.discardingErrors))
   }
 }

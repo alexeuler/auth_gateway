@@ -5,6 +5,22 @@
 @defining(elements.label.toString.capitalize) { label =>
     <div class="form-group @if(elements.hasErrors) {has-error}">
         <label for="@elements.id">@label</label>
-        <input type="@idToType(elements.id)" class="form-control" id="exampleInputEmail1" placeholder="@label">
+        <input
+            type="@idToType(elements.id)"
+            class="form-control"
+            id="@elements.id"
+            name="@elements.id"
+            placeholder="@label"
+            value="@elements.field.value"
+        >
+        @if(elements.errors.nonEmpty) {
+            <span class="help-block">
+                <ul>
+                    @for(error <- elements.errors) {
+                        <li>@error</li>
+                    }
+                </ul>
+            </span>
+        }
     </div>
 }
