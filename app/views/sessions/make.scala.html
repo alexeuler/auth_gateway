@@ -6,7 +6,12 @@
 @main("Welcome to Homeland") {
   <div class="sessions-make">
     <div class="content">
-      @inputText(user("email"), '_label -> messages("email"))
+      @form(routes.Sessions.create()) {
+        @inputText(user("email"), '_label -> messages("email"))
+        @inputPassword(user("password"), '_label -> messages("password"))
+        <br />
+        <button type="submit" class="btn btn-primary login-button">@messages("signIn")</button>
+      }
     </div>
   </div>
 }

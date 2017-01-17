@@ -1,3 +1,3 @@
-auth.login = Логин
-auth.password = Пароль
-auth.signin = Войти
+email = Email
+password = Пароль
+signIn = Войти

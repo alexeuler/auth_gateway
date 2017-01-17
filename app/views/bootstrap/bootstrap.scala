@@ -8,6 +8,11 @@ object Implicits {
     def apply(elements: FieldElements) =
       input(elements)
   }
+}
 
-//  val f = FieldConstructor(input.render)
+object Helpers {
+  def idToType(id: String): String = id match {
+    case x if (x == "email") || (x == "password") => x
+    case _ => "text"
+  }
 }

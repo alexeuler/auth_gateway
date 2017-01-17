@@ -1,6 +1,10 @@
 @(elements: helper.FieldElements)
 
-<div class="form-group @if(elements.hasErrors) {has-error}">
-    <label for="@elements.id">@elements.label.toString.capitalize</label>
-    @elements.input
-</div>
+@import views.bootstrap.Helpers._
+
+@defining(elements.label.toString.capitalize) { label =>
+    <div class="form-group @if(elements.hasErrors) {has-error}">
+        <label for="@elements.id">@label</label>
+        <input type="@idToType(elements.id)" class="form-control" id="exampleInputEmail1" placeholder="@label">
+    </div>
+}
