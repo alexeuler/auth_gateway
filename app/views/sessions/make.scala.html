@@ -7,8 +7,8 @@
   <div class="sessions-make">
     <div class="content">
       @form(routes.Sessions.create()) {
-        @inputText(user("email"), '_label -> messages("email"))
-        @inputPassword(user("password"), '_label -> messages("password"))
+        @inputText(user("email"))
+        @inputPassword(user("password"))
         <br />
         <button type="submit" class="btn btn-primary login-button">@messages("signIn")</button>
       }

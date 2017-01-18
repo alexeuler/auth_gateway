@@ -2,7 +2,7 @@
 
 @import views.bootstrap.Helpers._
 
-@defining(elements.label.toString.capitalize) { label =>
+@defining(elements.messages(elements.label.toString).capitalize) { label =>
     <div class="form-group @if(elements.hasErrors) {has-error}">
         <label for="@elements.id">@label</label>
         <input
