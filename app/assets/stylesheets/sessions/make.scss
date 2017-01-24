@@ -1,3 +1,5 @@
+$error-color: #ed0300;
+
 .sessions-make {
   position: absolute;
   width: 100vw;
@@ -27,6 +29,15 @@
         label {
           color: white;
           text-shadow: 2px 2px 5px black;
+        }
+
+        &.has-error {
+          input {
+            border-color: $error-color;
+          }
+          span.help-block {
+            color: $error-color;
+          }
         }
       }
     }

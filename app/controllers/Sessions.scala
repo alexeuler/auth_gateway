@@ -13,7 +13,7 @@ class Sessions @Inject()(userRepo: UserRepo, val messagesApi: MessagesApi)(impli
 
   val userForm: Form[User] = Form(
     mapping(
-      "email" -> nonEmptyText,
+      "email" -> email,
       "password" -> nonEmptyText
     )(User.apply)(user => Some(user.email, ""))
   )
