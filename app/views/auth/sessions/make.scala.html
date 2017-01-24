@@ -7,10 +7,10 @@
   <div class="sessions-make">
     <div class="content">
       @form(controllers.auth.routes.Sessions.create(), 'novalidate -> "novalidate") {
-        @inputText(user("email"))
-        @inputPassword(user("password"))
+        @inputText(user("email"), '_label -> "auth.email")
+        @inputPassword(user("password"), '_label -> "auth.password")
         <br />
-        <button type="submit" class="btn btn-primary login-button">@messages("signIn")</button>
+        <button type="submit" class="btn btn-primary login-button">@messages("auth.signIn")</button>
       }
     </div>
   </div>

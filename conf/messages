@@ -1,7 +1,7 @@
-email = Email
-password = Password
-signIn = Sign in
-register = Register
+auth.email = Email
+auth.password = Password
+auth.signIn = Sign in
+auth.register = Register
 
 error.email = Valid email required
 error.required = This field is required
