@@ -9,7 +9,8 @@ import play.api.mvc._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class Sessions @Inject()(userRepo: UserRepo, val messagesApi: MessagesApi)(implicit exec: ExecutionContext) extends Controller with I18nSupport {
+class Sessions @Inject()(userRepo: UserRepo, val messagesApi: MessagesApi)(implicit exec: ExecutionContext)
+  extends Controller with I18nSupport {
 
   val userForm: Form[User] = Form(
     mapping(

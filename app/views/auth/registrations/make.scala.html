@@ -1,0 +1,17 @@
+@(user: Form[User])(implicit messages: Messages)
+
+@import helper._
+@import views.bootstrap.Implicits._
+
+@main("Welcome to Homeland") {
+  <div class="sessions-make">
+    <div class="content">
+      @form(controllers.auth.routes.Registrations.create(), 'novalidate -> "novalidate") {
+        @inputText(user("email"))
+        @inputPassword(user("password"))
+        <br />
+        <button type="submit" class="btn btn-primary login-button">@messages("register")</button>
+      }
+    </div>
+  </div>
+}
