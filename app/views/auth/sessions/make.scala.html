@@ -6,7 +6,7 @@
 @main("Welcome to Homeland") {
   <div class="sessions-make">
     <div class="content">
-      @form(routes.Sessions.create(), 'novalidate -> "novalidate") {
+      @form(controllers.auth.routes.Sessions.create(), 'novalidate -> "novalidate") {
         @inputText(user("email"))
         @inputPassword(user("password"))
         <br />
