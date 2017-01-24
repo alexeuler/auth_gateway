@@ -31,6 +31,12 @@ $error-color: #ed0300;
           text-shadow: 2px 2px 5px black;
         }
 
+        .help-block {
+          ul {
+            padding-left: 20px;
+          }
+        }
+
         &.has-error {
           input {
             border-color: $error-color;
