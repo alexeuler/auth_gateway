@@ -13,12 +13,15 @@ libraryDependencies ++= Seq(
   "org.webjars" % "jquery" % "2.1.3",
   "org.postgresql" % "postgresql" % "9.4-1206-jdbc42",
   "com.typesafe.play" %% "play-slick" % "2.0.0",
-  "com.typesafe.play" %% "play-slick-evolutions" % "2.0.0"
+  "com.typesafe.play" %% "play-slick-evolutions" % "2.0.0",
+  "com.mohiva" %% "play-silhouette" % "4.0.0"
 )
 
 unmanagedResourceDirectories in Test <+=  baseDirectory ( _ /"target/web/public/test" )  
 
 resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases"
+
+resolvers += "atlassian" at "https://maven.atlassian.com/content/repositories/atlassian-public/"
 
 // if localhost has a lot of cookies
 PlayKeys.devSettings := Seq("play.server.netty.maxHeaderSize" -> "16384")

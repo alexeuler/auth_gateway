@@ -8,7 +8,7 @@ GET     /login                      controllers.auth.Sessions.make
 POST    /login                      controllers.auth.Sessions.create
 GET     /register                   controllers.auth.Registrations.make
 POST    /register                   controllers.auth.Registrations.create
-
+GET     /dashboard                  controllers.Dashboard.index
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
 
