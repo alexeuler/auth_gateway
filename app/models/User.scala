@@ -22,6 +22,8 @@ object User {
   def apply(provider: String, email: String, password: String): User =
     User(0L, new Timestamp(0L), new Timestamp(0L), provider, email.toLowerCase, Encryption.md5(password))
 
+  def apply(email: String, password: String): User = apply("email", email, password)
+
   def tupled = (User.apply: (Long, Timestamp, Timestamp, String, String, String) => User).tupled
 }
 

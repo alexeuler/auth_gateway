@@ -7,6 +7,10 @@ import models.{User, UserRepo}
 
 import scala.concurrent.Future
 
-class UserService @Inject() (userRepo: UserRepo) extends IdentityService[User] {
+trait UserService extends IdentityService[User] {
+  override def retrieve(loginInfo: LoginInfo): Future[Option[User]]
+}
+
+class UserServiceImpl @Inject() (userRepo: UserRepo) extends UserService {
   override def retrieve(loginInfo: LoginInfo): Future[Option[User]] = userRepo.find(loginInfo)
 }
