@@ -44,12 +44,12 @@ class UserRepoImpl @Inject()(override val dbConfigProvider: DatabaseConfigProvid
   }
 
   object UserQueries {
-    def find(loginInfo: LoginInfo): Query[EntityTable, User, Seq] =
+    def filter(loginInfo: LoginInfo): Query[EntityTable, User, Seq] =
       for (user <- query; if (user.email === loginInfo.providerKey) && (user.provider === loginInfo.providerID)) yield user
   }
 
   object UserActions {
-    def find(loginInfo: LoginInfo): DBIO[Option[User]] = UserQueries.find(loginInfo).result.headOption
+    def find(loginInfo: LoginInfo): DBIO[Option[User]] = UserQueries.filter(loginInfo).result.headOption
   }
 
   override def query = TableQuery[EntityTable]

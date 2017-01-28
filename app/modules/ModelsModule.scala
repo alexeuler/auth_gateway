@@ -1,10 +1,12 @@
 package modules
 
 import com.google.inject.AbstractModule
-import models.{UserRepo, UserRepoImpl}
+import models.{UserRegisterTokenRepo, UserRegisterTokenRepoImpl, UserRepo, UserRepoImpl}
+import net.codingwell.scalaguice.ScalaModule
 
-class ModelsModule extends AbstractModule {
+class ModelsModule extends AbstractModule with ScalaModule {
   override def configure(): Unit = {
-    bind(classOf[UserRepo]).to(classOf[UserRepoImpl])
+    bind[UserRepo].to[UserRepoImpl]
+    bind[UserRegisterTokenRepo].to[UserRegisterTokenRepoImpl]
   }
 }
