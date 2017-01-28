@@ -29,6 +29,7 @@ object User {
 
 trait UserRepo {
   def find(loginInfo: LoginInfo): Future[Option[User]]
+  def create(user: User): Future[User]
 }
 
 @Singleton

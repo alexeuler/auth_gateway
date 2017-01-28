@@ -4,7 +4,7 @@ import com.google.inject.Inject
 import com.mohiva.play.silhouette.api.{LoginInfo, Silhouette}
 import com.mohiva.play.silhouette.api.actions.{SecuredRequest, UserAwareRequest}
 import com.mohiva.play.silhouette.api.services.IdentityService
-import models.{User, UserRepo}
+import models._
 import play.api.data._
 import play.api.data.Forms._
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -15,6 +15,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class Registrations @Inject()(
                                userRepo: UserRepo,
+                               userRegisterTokenRepo: TokenRepo,
                                val messagesApi: MessagesApi,
                                silhouette: Silhouette[DefaultEnv],
                                userService: IdentityService[User]
@@ -36,7 +37,17 @@ class Registrations @Inject()(
         val loginInfo: LoginInfo = LoginInfo("email", user.email)
         userService.retrieve(loginInfo).flatMap {
           case Some(_) => Future { BadRequest(views.html.auth.registrations.make(userForm.withError("email", "error.email_not_unique"))) }
-          case None => Future { Ok("Ok") }
+          case None => {
+            val token = Token(payload = loginInfo.providerKey, action = TokenAction.Register)
+            val tokenResult = userRegisterTokenRepo.create(token)
+            val userResult = userRepo.create(user)
+            for {
+              savedToken <- tokenResult
+              savedUser <- userResult
+            } yield {
+              Ok(savedToken.toString + " : " + savedUser.toString)
+            }
+          }
         }
       }
     )
