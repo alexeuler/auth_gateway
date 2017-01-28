@@ -21,6 +21,7 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
   override def configure(): Unit = {
     bind[Silhouette[DefaultEnv]].to[SilhouetteProvider[DefaultEnv]]
     bind[FingerprintGenerator].toInstance(new DefaultFingerprintGenerator(false))
+    bind[IdentityService[User]].to[UserService]
     bind[UserService].to[UserServiceImpl]
     bind[EventBus].toInstance(EventBus())
     bind[Clock].toInstance(Clock())

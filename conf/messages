@@ -4,4 +4,5 @@ auth.signIn = Sign in
 auth.register = Register
 
 error.email = Valid email required
+error.email_not_unique = Email is already taken
 error.required = This field is required
