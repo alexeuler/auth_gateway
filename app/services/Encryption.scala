@@ -1,6 +1,7 @@
 package services
 
 import java.security.{MessageDigest, SecureRandom}
+import java.util.UUID
 
 import com.google.common.io.BaseEncoding
 
@@ -11,12 +12,6 @@ object Encryption {
   }
 
   def randomHash(): String = {
-    val seedSize = 55
-    val randomBytesSize = 32
-    val random = new SecureRandom()
-    random.setSeed(random.generateSeed(seedSize))
-    val bytes = new Array[Byte](randomBytesSize)
-    random.nextBytes(bytes)
-    BaseEncoding.base64().encode(bytes)
+    UUID.randomUUID().toString
   }
 }

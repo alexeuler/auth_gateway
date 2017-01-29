@@ -4,11 +4,13 @@ import com.google.inject.Inject
 import com.mohiva.play.silhouette.api.{LoginInfo, Silhouette}
 import com.mohiva.play.silhouette.api.actions.{SecuredRequest, UserAwareRequest}
 import com.mohiva.play.silhouette.api.services.IdentityService
+import mailers.AuthMailer
 import models._
 import play.api.data._
 import play.api.data.Forms._
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc._
+import services.Mail
 import silhouette.{DefaultEnv, UserService}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -18,7 +20,8 @@ class Registrations @Inject()(
                                userRegisterTokenRepo: TokenRepo,
                                val messagesApi: MessagesApi,
                                silhouette: Silhouette[DefaultEnv],
-                               userService: IdentityService[User]
+                               userService: IdentityService[User],
+                               authMailer: AuthMailer
                              )(
                                implicit ex: ExecutionContext
                              ) extends Controller with I18nSupport {
@@ -32,18 +35,20 @@ class Registrations @Inject()(
 
   def create = silhouette.UnsecuredAction.async { implicit request =>
     userForm.bindFromRequest().fold(
-      formWithErrors => Future { BadRequest(views.html.auth.registrations.make(formWithErrors)) },
+      formWithErrors => Future.successful { BadRequest(views.html.auth.registrations.make(formWithErrors)) },
       user => {
         val loginInfo: LoginInfo = LoginInfo("email", user.email)
         userService.retrieve(loginInfo).flatMap {
-          case Some(_) => Future { BadRequest(views.html.auth.registrations.make(userForm.withError("email", "error.email_not_unique"))) }
+          case Some(_) => Future.successful { BadRequest(views.html.auth.registrations.make(userForm.withError("email", "error.email_not_unique"))) }
           case None => {
             val token = Token(payload = loginInfo.providerKey, action = TokenAction.Register)
             val tokenResult = userRegisterTokenRepo.create(token)
             val userResult = userRepo.create(user)
+            val mailerResult = authMailer.confirmEmail(user.email, token.value)
             for {
               savedToken <- tokenResult
               savedUser <- userResult
+              _ <- mailerResult
             } yield {
               Ok(savedToken.toString + " : " + savedUser.toString)
             }
@@ -58,5 +63,9 @@ class Registrations @Inject()(
       case Some(_) => Redirect(controllers.routes.Application.index())
       case None => Ok(views.html.auth.registrations.make(userForm.discardingErrors))
     }
+  }
+
+  def confirm(token: String) = silhouette.UnsecuredAction {
+    Ok(s"Confirmed $token")
   }
 }
