@@ -1,19 +1,20 @@
-# -- Add Tokens
+# -- Add Users
 
 # --- !Ups
 
-CREATE TABLE tokens (
+CREATE TABLE users (
   id SERIAL PRIMARY KEY,
-  value VARCHAR(255) NOT NULL,
-  action VARCHAR(255) NOT NULL,
-  payload VARCHAR(255) NOT NULL,
-  expiration_time TIMESTAMP NOT NULL,
+  provider VARCHAR(255) NOT NULL,
+  email VARCHAR(255) NOT NULL,
+  password VARCHAR(255) NOT NULL,
+  role VARCHAR(255) NOT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT current_timestamp,
   updated_at TIMESTAMP NOT NULL DEFAULT current_timestamp
 );
 
-CREATE TRIGGER update_token_timestamp BEFORE UPDATE ON tokens FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
+CREATE TRIGGER update_user_timestamp BEFORE UPDATE ON users FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
 
 # --- !Downs
-DROP TRIGGER update_token_timestamp ON tokens;
-DROP TABLE tokens;
+DROP TRIGGER update_user_timestamp ON users;
+DROP TABLE users;
+
