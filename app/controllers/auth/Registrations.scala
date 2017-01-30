@@ -50,7 +50,8 @@ class Registrations @Inject()(
               savedUser <- userResult
               _ <- mailerResult
             } yield {
-              Ok(savedToken.toString + " : " + savedUser.toString)
+              Redirect(routes.Sessions.make())
+                .flashing("success" -> messagesApi("auth.register_success", user.email))
             }
           }
         }

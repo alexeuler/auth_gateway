@@ -1,0 +1,18 @@
+@(request: RequestHeader)
+
+@render(status: String) = {
+@for(message <- request.flash.get(status)) {
+    <div class="alert alert-dismissible alert-@status" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        @message
+    </div>
+}
+}
+
+<div class="flash-container">
+@for(status <- Seq("success", "info", "warning", "danger")) {
+    @render(status)
+}
+</div>
