@@ -29,9 +29,11 @@ abstract class BaseRepo[T](protected val dbConfigProvider: DatabaseConfigProvide
     def find(id: Long): DBIO[Option[T]] = BaseQueries.filterById(id).result.headOption
     def create(model: T): DBIO[T] = query returning query += model
     def create(models: Seq[T]): DBIO[Seq[T]] = query returning query ++= models
+    def delete(id: Long): DBIO[Int] = BaseQueries.filterById(id).delete
   }
 
   def find(id: Long): Future[Option[T]] = db.run(BaseActions.find(id))
   def create(model: T): Future[T] = db.run(BaseActions.create(model))
   def create(models: Seq[T]): Future[Seq[T]] = db.run(BaseActions.create(models))
+  def delete(id: Long): Future[Int] = db.run(BaseActions.delete(id))
 }

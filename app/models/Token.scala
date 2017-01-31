@@ -27,15 +27,19 @@ case class Token(id: Long = 0L,
                  value: String = Encryption.randomHash(),
                  expirationTime: Timestamp = new Timestamp(Dates.daysFromNow(7).getTime)) {
 
-  def handle(userRepo: UserRepo)(implicit exec: ExecutionContext): Future[Boolean] = action match {
+  def handle(userRepo: UserRepo, tokenRepo: TokenRepo)(implicit exec: ExecutionContext): Future[Boolean] = action match {
     case TokenAction.Register =>
-      userRepo.updateRole(new LoginInfo("email", payload), Role.User).map(_ != 0)
+      for {
+        result <- userRepo.updateRole(new LoginInfo("email", payload), Role.User)
+        _ <- tokenRepo.delete(id)
+      } yield { result != 0 }
   }
 }
 
 trait TokenRepo {
   def find(value: String): Future[Option[Token]]
   def create(token: Token): Future[Token]
+  def delete(id: Long): Future[Int]
 }
 
 @Singleton
