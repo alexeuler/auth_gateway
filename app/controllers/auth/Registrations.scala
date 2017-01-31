@@ -49,10 +49,14 @@ class Registrations @Inject()(
               _ <- tokenResult
               _ <- userResult
               _ <- mailerResult
-            } yield {
-              Redirect(routes.Sessions.make())
-                .flashing("success" -> messagesApi("auth.register_success", user.email))
-            }
+              authenticator <- silhouette.env.authenticatorService.create(loginInfo)
+              session <- silhouette.env.authenticatorService.init(authenticator)
+              result <- silhouette.env.authenticatorService.embed(
+                session,
+                Redirect(controllers.routes.Application.index())
+                  .flashing("success" -> messagesApi("auth.register_success", user.email))
+              )
+            } yield result
           }
         }
       }

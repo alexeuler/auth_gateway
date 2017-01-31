@@ -18,7 +18,7 @@ class Tokens @Inject()(
                         implicit exec: ExecutionContext
                       ) extends Controller with I18nSupport {
 
-  def action(tokenValue: String) = silhouette.UnsecuredAction.async { implicit request =>
+  def action(tokenValue: String) = silhouette.UserAwareAction.async { implicit request =>
     tokenRepo.find(tokenValue).flatMap {
       case None => Future.successful {
         Redirect(controllers.auth.routes.Registrations.make())
@@ -27,7 +27,7 @@ class Tokens @Inject()(
       case Some(token) => {
         for (success <- token.handle(userRepo, tokenRepo)) yield {
           if (success) {
-            Redirect(controllers.auth.routes.Sessions.make())
+            Redirect(routes.Application.index())
               .flashing("success" -> messagesApi("auth.confirm_success"))
           } else {
             Redirect(controllers.auth.routes.Registrations.make())

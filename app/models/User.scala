@@ -33,7 +33,10 @@ case class User(id: Long = 0L,
                 email: String,
                 password: String,
                 role: Role
-               ) extends Identity
+               ) extends Identity {
+
+  def hasPassword(pass: String): Boolean = Encryption.md5(pass) == password
+}
 
 object User {
   def apply(provider: Provider, email: String, password: String): User =

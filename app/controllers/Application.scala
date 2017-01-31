@@ -6,6 +6,6 @@ import play.api.mvc._
 class Application extends Controller {
 
   def index = Action {
-    Redirect(auth.routes.Sessions.make())
+    Redirect(routes.Dashboard.index())
   }
 }
