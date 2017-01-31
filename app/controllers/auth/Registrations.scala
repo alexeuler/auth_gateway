@@ -17,7 +17,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class Registrations @Inject()(
                                userRepo: UserRepo,
-                               userRegisterTokenRepo: TokenRepo,
+                               tokenRepo: TokenRepo,
                                val messagesApi: MessagesApi,
                                silhouette: Silhouette[DefaultEnv],
                                userService: IdentityService[User],
@@ -42,12 +42,12 @@ class Registrations @Inject()(
           case Some(_) => Future.successful { BadRequest(views.html.auth.registrations.make(userForm.withError("email", "error.email_not_unique"))) }
           case None => {
             val token = Token(payload = loginInfo.providerKey, action = TokenAction.Register)
-            val tokenResult = userRegisterTokenRepo.create(token)
+            val tokenResult = tokenRepo.create(token)
             val userResult = userRepo.create(user)
             val mailerResult = authMailer.confirmEmail(user.email, token.value)
             for {
-              savedToken <- tokenResult
-              savedUser <- userResult
+              _ <- tokenResult
+              _ <- userResult
               _ <- mailerResult
             } yield {
               Redirect(routes.Sessions.make())
@@ -66,7 +66,4 @@ class Registrations @Inject()(
     }
   }
 
-  def confirm(token: String) = silhouette.UnsecuredAction {
-    Ok(s"Confirmed $token")
-  }
 }

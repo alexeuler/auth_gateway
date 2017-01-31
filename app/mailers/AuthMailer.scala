@@ -17,6 +17,6 @@ class AuthMailerImpl @Inject() (mail: Mail) extends AuthMailer {
       email,
       "Please confirm your email",
       "Please confirm your email by clicking this " +
-      s"<a href=${controllers.auth.routes.Registrations.confirm(token).absoluteURL}>link</a>."
+      s"<a href=${controllers.routes.Tokens.action(token).absoluteURL}>link</a>."
     )
 }

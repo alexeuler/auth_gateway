@@ -4,10 +4,12 @@ import java.sql.Timestamp
 
 import com.google.inject.{Inject, Singleton}
 import com.mohiva.play.silhouette.api.{Identity, LoginInfo}
+import models.Role.Role
 import play.api.db.slick.DatabaseConfigProvider
 import services.{Dates, Encryption}
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
+import scala.util.Try
 
 object TokenAction extends Enumeration {
   type TokenAction = Value
@@ -23,7 +25,13 @@ case class Token(id: Long = 0L,
                  payload: String,
                  action: TokenAction,
                  value: String = Encryption.randomHash(),
-                 expirationTime: Timestamp = new Timestamp(Dates.daysFromNow(7).getTime))
+                 expirationTime: Timestamp = new Timestamp(Dates.daysFromNow(7).getTime)) {
+
+  def handle(userRepo: UserRepo)(implicit exec: ExecutionContext): Future[Boolean] = action match {
+    case TokenAction.Register =>
+      userRepo.updateRole(new LoginInfo("email", payload), Role.User).map(_ != 0)
+  }
+}
 
 trait TokenRepo {
   def find(value: String): Future[Option[Token]]
