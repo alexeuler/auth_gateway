@@ -18,7 +18,7 @@ class IntegrationSpec extends Specification {
 
       browser.goTo("http://localhost:" + port)
 
-      browser.pageSource must contain("Your make application is ready.")
+      browser.pageSource must contain("Email")
     }
   }
 }

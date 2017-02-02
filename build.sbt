@@ -12,6 +12,7 @@ libraryDependencies ++= Seq(
   "org.webjars.bower" % "bootstrap-sass" % "3.3.6",
   "org.webjars" % "jquery" % "2.1.3",
   "org.postgresql" % "postgresql" % "9.4-1206-jdbc42",
+  "com.h2database" % "h2" % "1.4.193",
   "com.typesafe.play" %% "play-slick" % "2.0.0",
   "com.typesafe.play" %% "play-slick-evolutions" % "2.0.0",
   "com.mohiva" %% "play-silhouette" % "4.0.0",
@@ -21,7 +22,9 @@ libraryDependencies ++= Seq(
   "com.typesafe.play" %% "play-mailer" % "5.0.0"
 )
 
-unmanagedResourceDirectories in Test <+=  baseDirectory ( _ /"target/web/public/test" )  
+unmanagedResourceDirectories in Test <+=  baseDirectory ( _ /"target/web/public/test" )
+
+javaOptions in Test += "-Dconfig.file=conf/application.test.conf"
 
 resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases"
 
