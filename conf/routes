@@ -6,8 +6,8 @@
 GET     /                           controllers.Application.index
 GET     /login                      controllers.auth.Sessions.make
 POST    /login                      controllers.auth.Sessions.create
-GET     /register                   controllers.auth.Registrations.make
-POST    /register                   controllers.auth.Registrations.create
+GET     /signup                     controllers.auth.Registrations.make
+POST    /signup                     controllers.auth.Registrations.create
 GET     /tokens/action/:token       controllers.Tokens.action(token)
 GET     /dashboard                  controllers.Dashboard.index
 # Map static resources from the /public folder to the /assets URL path
