@@ -1,9 +1,10 @@
 import helpers.DefaultSpec
+import org.scalatestplus.play.OneAppPerSuite
+import play.api.inject.guice.GuiceApplicationBuilder
 
 import scala.collection.mutable
 
-class StackSpec extends DefaultSpec {
-
+class StackSpec extends DefaultSpec with OneAppPerSuite {
   describe("Stack") {
     it("pops values LIFO") {
       val stack = new mutable.Stack[Int]

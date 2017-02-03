@@ -11,6 +11,7 @@ import scala.concurrent.Future
 trait UserRepo {
   def find(loginInfo: LoginInfo): Future[Option[User]]
   def create(user: User): Future[User]
+  def create(users: Seq[User]): Future[Seq[User]]
   def updateRole(loginInfo: LoginInfo, role: Role): Future[Int]
 }
 

@@ -20,7 +20,9 @@ libraryDependencies ++= Seq(
   "net.codingwell" %% "scala-guice" % "4.1.0",
   "net.ceedubs" % "ficus_2.11" % "1.1.2",
   "com.typesafe.play" %% "play-mailer" % "5.0.0",
-  "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.0" % "test"
+  "org.typelevel" %% "cats" % "0.9.0",
+  "org.scalatestplus.play" %% "scalatestplus-play" % "2.0.0-M1" % "test",
+  "org.scalacheck" %% "scalacheck" % "1.13.1" % "test"
 )
 
 unmanagedResourceDirectories in Test <+=  baseDirectory ( _ /"target/web/public/test" )
