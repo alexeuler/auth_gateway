@@ -6,7 +6,7 @@ lazy val `homeland` = (project in file(".")).enablePlugins(PlayScala)
 
 scalaVersion := "2.11.7"
 
-libraryDependencies ++= Seq(cache, ws, specs2 % Test)
+libraryDependencies ++= Seq(cache, ws)
 
 libraryDependencies ++= Seq(
   "org.webjars.bower" % "bootstrap-sass" % "3.3.6",
@@ -19,7 +19,8 @@ libraryDependencies ++= Seq(
   "com.mohiva" %% "play-silhouette-crypto-jca" % "4.0.0",
   "net.codingwell" %% "scala-guice" % "4.1.0",
   "net.ceedubs" % "ficus_2.11" % "1.1.2",
-  "com.typesafe.play" %% "play-mailer" % "5.0.0"
+  "com.typesafe.play" %% "play-mailer" % "5.0.0",
+  "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.0" % "test"
 )
 
 unmanagedResourceDirectories in Test <+=  baseDirectory ( _ /"target/web/public/test" )
