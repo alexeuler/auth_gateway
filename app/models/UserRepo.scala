@@ -2,6 +2,7 @@ package models
 
 import com.google.inject.{Inject, Singleton}
 import com.mohiva.play.silhouette.api.LoginInfo
+import models.ModelsExceptions.{NotFoundException, TooManyFoundException}
 import models.Provider.Provider
 import models.Role.Role
 import play.api.db.Database
@@ -46,7 +47,9 @@ class UserRepoImpl @Inject()(override val dbConfigProvider: DatabaseConfigProvid
   }
 
   object UserActions {
-    def find(loginInfo: LoginInfo): DBIO[Option[User]] = UserQueries.filter(loginInfo).result.headOption
+    def find(loginInfo: LoginInfo): DBIO[Option[User]] = UserQueries.filter(loginInfo).result.flatMap(users =>
+      if (users.size < 2) DBIO.successful(users.headOption) else DBIO.failed(TooManyFoundException(loginInfo))
+    )
     def updateRole(loginInfo: LoginInfo, role: Role): DBIO[Int] =
       UserQueries.filter(loginInfo).map(_.role).update(role)
   }
