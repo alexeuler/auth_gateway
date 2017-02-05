@@ -5,12 +5,13 @@ import java.sql.Timestamp
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.driver.JdbcProfile
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-abstract class BaseRepo[T](protected val dbConfigProvider: DatabaseConfigProvider)
+abstract class BaseRepo[T](protected val dbConfigProvider: DatabaseConfigProvider)(implicit exec: ExecutionContext)
   extends HasDatabaseConfigProvider[JdbcProfile] {
 
   import driver.api._
+  import Exceptions._
 
   type EntityTable <: BaseTable
   def query: TableQuery[EntityTable]
@@ -26,16 +27,20 @@ abstract class BaseRepo[T](protected val dbConfigProvider: DatabaseConfigProvide
   }
 
   protected object BaseActions {
-    def find(id: Long): DBIO[Option[T]] = BaseQueries.filterById(id).result.headOption
+    def find(id: Long): DBIO[T] = BaseQueries.filterById(id).result.flatMap((entities: Seq[T]) => entities.size match {
+      case 0 => DBIO.failed(NotFoundException(id))
+      case 1 => DBIO.successful(entities.head)
+      case _ => DBIO.failed(TooManyFoundException(id))
+    })
     def create(model: T): DBIO[T] = query returning query += model
-    def create(models: Seq[T]): DBIO[Seq[T]] = query returning query ++= models
+    def create(models: Iterable[T]): DBIO[Seq[T]] = query returning query ++= models
     def delete(id: Long): DBIO[Int] = BaseQueries.filterById(id).delete
     def clean: DBIO[Int] = query.delete
   }
 
-  def find(id: Long): Future[Option[T]] = db.run(BaseActions.find(id))
+  def find(id: Long): Future[T] = db.run(BaseActions.find(id))
   def create(model: T): Future[T] = db.run(BaseActions.create(model))
-  def create(models: Seq[T]): Future[Seq[T]] = db.run(BaseActions.create(models))
+  def create(models: Iterable[T]): Future[Seq[T]] = db.run(BaseActions.create(models))
   def delete(id: Long): Future[Int] = db.run(BaseActions.delete(id))
   def clean: Future[Int] = db.run(BaseActions.clean)
 }

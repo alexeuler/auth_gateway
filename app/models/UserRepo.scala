@@ -7,18 +7,18 @@ import models.Role.Role
 import play.api.db.Database
 import play.api.db.slick.DatabaseConfigProvider
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 trait UserRepo {
   def find(loginInfo: LoginInfo): Future[Option[User]]
   def create(user: User): Future[User]
-  def create(users: Seq[User]): Future[Seq[User]]
+  def create(users: Iterable[User]): Future[Seq[User]]
   def updateRole(loginInfo: LoginInfo, role: Role): Future[Int]
   def clean: Future[Int]
 }
 
 @Singleton
-class UserRepoImpl @Inject()(override val dbConfigProvider: DatabaseConfigProvider)
+class UserRepoImpl @Inject()(override val dbConfigProvider: DatabaseConfigProvider)(implicit exec: ExecutionContext)
   extends BaseRepo[User](dbConfigProvider) with UserRepo {
   import driver.api._
 

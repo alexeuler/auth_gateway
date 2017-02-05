@@ -30,7 +30,7 @@ class UserRepoSpec extends DefaultSpec with DefaultPropertyChecks with OneAppPer
     import generators.UserGenerators._
     describe("find") {
       it("finds a user by login info (provider + id)") {
-        forAllAsync { users: List[User] =>
+        forAllAsync { users: Set[User] =>
           for {
             dbUsers <- userRepo.create(users)
             foundUsers <- Future.traverse(dbUsers)(user =>
@@ -40,6 +40,14 @@ class UserRepoSpec extends DefaultSpec with DefaultPropertyChecks with OneAppPer
           } yield {
             (foundUsers.toList.sequence: Option[List[User]]) shouldBe Some(dbUsers)
           }
+        }
+      }
+
+      describe("No data with search params in db") {
+        it("Fails with NotFoundException") {
+//          forAllAsync { (users: List[User], user: User) =>
+//            _ <- userRepo.create(users)
+//          }
         }
       }
     }

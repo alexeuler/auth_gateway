@@ -6,7 +6,7 @@ import com.google.inject.{Inject, Singleton}
 import models.TokenAction.TokenAction
 import play.api.db.slick.DatabaseConfigProvider
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 trait TokenRepo {
   def find(value: String): Future[Option[Token]]
@@ -15,7 +15,7 @@ trait TokenRepo {
 }
 
 @Singleton
-class TokenRepoImpl @Inject()(override val dbConfigProvider: DatabaseConfigProvider)
+class TokenRepoImpl @Inject()(override val dbConfigProvider: DatabaseConfigProvider)(implicit exec: ExecutionContext)
   extends BaseRepo[Token](dbConfigProvider) with TokenRepo {
 
   import driver.api._

@@ -20,13 +20,10 @@ object UserGenerators {
     role
   )
 
-  def users(role: Role = Role.User): Gen[List[User]] = Gen.listOf(user(role))
-
-//  def users(role: Role = Role.User): Gen[List[User]] = for {
-//    num <- Basic.smallNumGen
-//    users <- Gen.listOfN(num, user(role))
-//  } yield users
+  def usersList(role: Role = Role.User): Gen[List[User]] = Gen.listOf(user(role))
+  def usersSet(role: Role = Role.User): Gen[Set[User]] = usersList(role).map(_.toSet)
 
   implicit val arbUser = Arbitrary(user())
-  implicit val arbUsers = Arbitrary(users())
+  implicit val arbUsersList = Arbitrary(usersList())
+  implicit val arbUsersSet = Arbitrary(usersSet())
 }
