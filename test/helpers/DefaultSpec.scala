@@ -7,4 +7,5 @@ abstract class DefaultSpec extends FunSpec
   with Matchers
   with OptionValues
   with WsScalaTestClient
+  with BeforeAndAfter
 

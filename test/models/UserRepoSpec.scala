@@ -5,6 +5,8 @@ import com.mohiva.play.silhouette.api.LoginInfo
 import helpers.{DefaultPropertyChecks, DefaultSpec}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play.OneAppPerSuite
+import play.api.db.DBApi
+import play.api.db.evolutions.Evolutions
 
 import scala.collection.mutable
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -12,6 +14,17 @@ import scala.concurrent.Future
 
 class UserRepoSpec extends DefaultSpec with DefaultPropertyChecks with OneAppPerSuite {
   val userRepo = app.injector.instanceOf(classOf[UserRepo])
+  val database = app.injector.instanceOf(classOf[DBApi]).database("default")
+
+  before {
+    Evolutions.cleanupEvolutions(database)
+    Evolutions.applyEvolutions(database)
+  }
+
+  after {
+    Evolutions.cleanupEvolutions(database)
+    Evolutions.applyEvolutions(database)
+  }
 
   describe("Stack") {
     it("pops values LIFO") {
@@ -34,7 +47,6 @@ class UserRepoSpec extends DefaultSpec with DefaultPropertyChecks with OneAppPer
               foundUsers <- Future.traverse(dbUsers)(user =>
                 userRepo.find(new LoginInfo(user.provider.toString, user.email))
               )
-              _ <- userRepo.clean
             } yield {
               (foundUsers.toList.sequence: Option[List[User]]) shouldBe Some(dbUsers)
             }

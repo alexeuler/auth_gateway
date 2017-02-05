@@ -2,7 +2,7 @@ package models
 
 import com.google.inject.{Inject, Singleton}
 import com.mohiva.play.silhouette.api.LoginInfo
-import models.ModelsExceptions.{NotFoundException, TooManyFoundException}
+import models.ModelsExceptions.TooManyFoundException
 import models.Provider.Provider
 import models.Role.Role
 import play.api.db.Database
@@ -15,7 +15,6 @@ trait UserRepo {
   def create(user: User): Future[User]
   def create(users: Iterable[User]): Future[Seq[User]]
   def updateRole(loginInfo: LoginInfo, role: Role): Future[Int]
-  def clean: Future[Int]
 }
 
 @Singleton
