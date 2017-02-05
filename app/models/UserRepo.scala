@@ -43,18 +43,37 @@ class UserRepoImpl @Inject()(override val dbConfigProvider: DatabaseConfigProvid
   object UserQueries {
     def filter(loginInfo: LoginInfo): Query[EntityTable, User, Seq] =
       for (user <- query; if (user.email === loginInfo.providerKey) && (user.provider === Provider.withName(loginInfo.providerID))) yield user
+    def filterByEmails(emails: Iterable[String]): Query[EntityTable, User, Seq] =
+      for (user <- query; if user.email inSet emails) yield user
   }
 
   object UserActions {
     def find(loginInfo: LoginInfo): DBIO[Option[User]] = UserQueries.filter(loginInfo).result.flatMap(users =>
       if (users.size < 2) DBIO.successful(users.headOption) else DBIO.failed(TooManyFoundException(loginInfo))
     )
+    def create(user: User): DBIO[User] =
+      find(new LoginInfo(user.provider.toString, user.email)).flatMap {
+        case Some(_) => DBIO.failed(ModelsExceptions.AlreadyExists(user))
+        case None => query returning query += user
+      }
+    def create(users: Iterable[User]): DBIO[Seq[User]] = {
+      // If there are two users with the same credentials in arguments throw an exception
+      if (users.map(_.toLoginInfo).toSet.size != users.size) return DBIO.failed(new IllegalArgumentException)
+      UserQueries.filterByEmails(users.map(_.email)).result.flatMap(existingUsers => {
+        val commonUsers = users.map(_.toLoginInfo).toSet.intersect(existingUsers.map(_.toLoginInfo).toSet)
+        if (commonUsers.nonEmpty)
+          DBIO.failed(ModelsExceptions.AlreadyExists(commonUsers))
+        else
+          query returning query ++= users
+      })
+    }
     def updateRole(loginInfo: LoginInfo, role: Role): DBIO[Int] =
       UserQueries.filter(loginInfo).map(_.role).update(role)
   }
 
   override def query = TableQuery[EntityTable]
-
   override def find(loginInfo: LoginInfo): Future[Option[User]] = db.run(UserActions.find(loginInfo))
+  override def create(user: User): Future[User] = db.run(UserActions.create(user))
+  override def create(users: Iterable[User]): Future[Seq[User]] = db.run(UserActions.create(users))
   def updateRole(loginInfo: LoginInfo, role: Role): Future[Int] = db.run(UserActions.updateRole(loginInfo, role))
 }

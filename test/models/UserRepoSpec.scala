@@ -15,6 +15,7 @@ class UserRepoSpec extends DefaultSpec with DefaultPropertyChecks with OneAppPer
 
   describe("UserRepo") {
     import generators.UserGenerators._
+
     describe("find") {
       describe("user with search params is in the db and unique") {
         it("returns Some(user)") {
@@ -42,17 +43,77 @@ class UserRepoSpec extends DefaultSpec with DefaultPropertyChecks with OneAppPer
           }
         }
       }
+    }
 
-      describe("Two users with the same credentials are in the db") {
-        it("Returns failed future with TooManyFoundException") {
-          forAll { (user: User) =>
-            val future = for {
-              _ <- userRepo.create(user)
-              _ <- userRepo.create(user)
-              _ <- userRepo.find(new LoginInfo(user.provider.toString, user.email))
-            } yield ()
-            ScalaFutures.whenReady(future.failed) { e =>
-              e shouldBe a [ModelsExceptions.TooManyFoundException[_]]
+    describe("create") {
+      describe("single user") {
+        it("stores user in the db with updated id, createdAt and updatedAt timestamps") {
+          forAllAsync { user: User =>
+            for {
+              dbUser <- userRepo.create(user)
+            } yield {
+              dbUser.id should not be user.id
+              dbUser.createdAt should not be user.createdAt
+              dbUser.updatedAt should not be user.updatedAt
+              dbUser.email shouldBe user.email
+            }
+          }
+        }
+
+        describe("entity already exists") {
+          it("throws an AlreadyExists exception") {
+            forAll { (user: User) =>
+              val future = for {
+                _ <- userRepo.create(user)
+                _ <- userRepo.create(user)
+              } yield ()
+              ScalaFutures.whenReady(future.failed) { e =>
+                e shouldBe a[ModelsExceptions.AlreadyExists[_]]
+              }
+            }
+          }
+        }
+      }
+
+      describe("many users") {
+        it("stores user in the db with updated id, createdAt and updatedAt timestamps") {
+          forAllAsync { users: List[User] =>
+            userRepo.create(users).map(dbUsers =>
+              dbUsers.map(dbUser => {
+                // default id and timestamps are the same for all generated users => can take first
+                val user = users.head
+                dbUser.id should not be user.id
+                dbUser.createdAt should not be user.createdAt
+                dbUser.updatedAt should not be user.updatedAt
+                users.map(_.email) should contain (dbUser.email)
+              })
+            )
+          }
+        }
+
+        describe("arguments contain users with the same login info") {
+          it("throws an IllegalArgument exception") {
+            forAll { (user: User) =>
+              val future = for {
+                _ <- userRepo.create(List(user, user))
+              } yield ()
+              ScalaFutures.whenReady(future.failed) { e =>
+                e shouldBe a[IllegalArgumentException]
+              }
+            }
+          }
+        }
+
+        describe("user with specified credentials already exists") {
+          it("throws an AlreadyExists exception") {
+            forAll { (user: User) =>
+              val future = for {
+                _ <- userRepo.create(user)
+                _ <- userRepo.create(List(user))
+              } yield ()
+              ScalaFutures.whenReady(future.failed) { e =>
+                e shouldBe a[ModelsExceptions.AlreadyExists[_]]
+              }
             }
           }
         }

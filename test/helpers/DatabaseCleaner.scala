@@ -11,8 +11,12 @@ trait DatabaseCleaner {
   val app: Application
   val database = app.injector.instanceOf(classOf[DBApi]).database("default")
 
-  before {
+  def cleanDatabase: Unit = {
     Evolutions.cleanupEvolutions(database)
     Evolutions.applyEvolutions(database)
+  }
+
+  before {
+    cleanDatabase
   }
 }

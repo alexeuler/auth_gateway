@@ -36,6 +36,7 @@ case class User(id: Long = 0L,
                ) extends Identity {
 
   def hasPassword(pass: String): Boolean = Encryption.md5(pass) == password
+  def toLoginInfo = new LoginInfo(provider.toString, email)
 }
 
 object User {
