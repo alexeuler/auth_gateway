@@ -2,39 +2,16 @@ package models
 
 import cats.implicits._
 import com.mohiva.play.silhouette.api.LoginInfo
-import helpers.{DefaultPropertyChecks, DefaultSpec}
+import helpers.{DatabaseCleaner, DefaultPropertyChecks, DefaultSpec}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play.OneAppPerSuite
-import play.api.db.DBApi
-import play.api.db.evolutions.Evolutions
 
 import scala.collection.mutable
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class UserRepoSpec extends DefaultSpec with DefaultPropertyChecks with OneAppPerSuite {
+class UserRepoSpec extends DefaultSpec with DefaultPropertyChecks with OneAppPerSuite with DatabaseCleaner {
   val userRepo = app.injector.instanceOf(classOf[UserRepo])
-  val database = app.injector.instanceOf(classOf[DBApi]).database("default")
-
-  before {
-    Evolutions.cleanupEvolutions(database)
-    Evolutions.applyEvolutions(database)
-  }
-
-  after {
-    Evolutions.cleanupEvolutions(database)
-    Evolutions.applyEvolutions(database)
-  }
-
-  describe("Stack") {
-    it("pops values LIFO") {
-      val stack = new mutable.Stack[Int]
-      stack.push(1)
-      stack.push(2)
-      stack.pop() should ===(2)
-      stack.pop() should ===(1)
-    }
-  }
 
   describe("UserRepo") {
     import generators.UserGenerators._
