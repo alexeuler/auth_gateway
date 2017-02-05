@@ -4,6 +4,7 @@ import com.google.inject.{Inject, Singleton}
 import com.mohiva.play.silhouette.api.LoginInfo
 import models.Provider.Provider
 import models.Role.Role
+import play.api.db.Database
 import play.api.db.slick.DatabaseConfigProvider
 
 import scala.concurrent.Future
@@ -13,6 +14,7 @@ trait UserRepo {
   def create(user: User): Future[User]
   def create(users: Seq[User]): Future[Seq[User]]
   def updateRole(loginInfo: LoginInfo, role: Role): Future[Int]
+  def clean: Future[Int]
 }
 
 @Singleton
