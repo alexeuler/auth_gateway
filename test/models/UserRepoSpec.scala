@@ -85,7 +85,7 @@ class UserRepoSpec extends DefaultSpec with DefaultPropertyChecks with OneAppPer
                 dbUser.id should not be user.id
                 dbUser.createdAt should not be user.createdAt
                 dbUser.updatedAt should not be user.updatedAt
-                users.map(_.email) should contain (dbUser.email)
+                users.map(_.email) should contain(dbUser.email)
               })
             )
           }
@@ -119,6 +119,34 @@ class UserRepoSpec extends DefaultSpec with DefaultPropertyChecks with OneAppPer
         }
       }
     }
-  }
 
+    describe("update Role") {
+      describe("user exists") {
+        it("updates a users role and returns true") {
+          forAllAsync { user: User =>
+            for {
+              _ <- userRepo.create(user)
+              result <- userRepo.updateRole(user.toLoginInfo, Role.Admin)
+              fetchedUser <- userRepo.find(user.toLoginInfo)
+            } yield {
+              result shouldBe true
+              fetchedUser.get.role shouldBe Role.Admin
+            }
+          }
+        }
+      }
+
+      describe("user doesn't exist") {
+        it("doesn't update and returns false") {
+          forAllAsync { user: User =>
+            for {
+              result <- userRepo.updateRole(user.toLoginInfo, Role.Admin)
+            } yield {
+              result shouldBe false
+            }
+          }
+        }
+      }
+    }
+  }
 }

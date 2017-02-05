@@ -14,7 +14,7 @@ trait UserRepo {
   def find(loginInfo: LoginInfo): Future[Option[User]]
   def create(user: User): Future[User]
   def create(users: Iterable[User]): Future[Seq[User]]
-  def updateRole(loginInfo: LoginInfo, role: Role): Future[Int]
+  def updateRole(loginInfo: LoginInfo, role: Role): Future[Boolean]
 }
 
 @Singleton
@@ -67,13 +67,13 @@ class UserRepoImpl @Inject()(override val dbConfigProvider: DatabaseConfigProvid
           query returning query ++= users
       })
     }
-    def updateRole(loginInfo: LoginInfo, role: Role): DBIO[Int] =
-      UserQueries.filter(loginInfo).map(_.role).update(role)
+    def updateRole(loginInfo: LoginInfo, role: Role): DBIO[Boolean] =
+      UserQueries.filter(loginInfo).map(_.role).update(role).map(_ != 0)
   }
 
   override def query = TableQuery[EntityTable]
   override def find(loginInfo: LoginInfo): Future[Option[User]] = db.run(UserActions.find(loginInfo))
   override def create(user: User): Future[User] = db.run(UserActions.create(user))
   override def create(users: Iterable[User]): Future[Seq[User]] = db.run(UserActions.create(users))
-  def updateRole(loginInfo: LoginInfo, role: Role): Future[Int] = db.run(UserActions.updateRole(loginInfo, role))
+  def updateRole(loginInfo: LoginInfo, role: Role): Future[Boolean] = db.run(UserActions.updateRole(loginInfo, role))
 }
