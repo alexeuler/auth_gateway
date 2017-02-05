@@ -1,9 +1,9 @@
 package helpers
 
-import org.scalatest._
+import org.scalatest.{AsyncFunSpec, FunSpec, Matchers, OptionValues}
 import org.scalatestplus.play.WsScalaTestClient
 
-abstract class DefaultSpec extends FunSpec
+abstract class AsyncDefaultSpec extends AsyncFunSpec
   with Matchers
   with OptionValues
   with WsScalaTestClient

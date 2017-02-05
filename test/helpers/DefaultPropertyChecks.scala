@@ -1,11 +1,12 @@
 package helpers
 
-import org.scalatest.prop.PropertyChecks
+import org.scalatest.prop
+import org.scalatest.prop.{GeneratorDrivenPropertyChecks, PropertyChecks}
 
-/**
-  * Created by alex on 04/02/17.
-  */
-trait DefaultPropertyChecks extends PropertyChecks {
+import scala.concurrent.{Await, Future}
+
+
+trait DefaultPropertyChecks extends PropertyChecks with AsyncPropertyChecks {
   implicit override val generatorDrivenConfig =
     PropertyCheckConfiguration(minSuccessful = 5, minSize = 0, sizeRange = 10)
 }

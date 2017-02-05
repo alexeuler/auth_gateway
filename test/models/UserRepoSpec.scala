@@ -1,7 +1,7 @@
 package models
 
 import com.mohiva.play.silhouette.api.LoginInfo
-import helpers.{DefaultPropertyChecks, DefaultSpec}
+import helpers.{AsyncDefaultSpec, DefaultPropertyChecks, DefaultSpec}
 import org.scalatestplus.play.OneAppPerSuite
 
 import scala.concurrent.{Await, Future}
@@ -19,8 +19,8 @@ class UserRepoSpec extends DefaultSpec with DefaultPropertyChecks with OneAppPer
       val stack = new mutable.Stack[Int]
       stack.push(1)
       stack.push(2)
-      stack.pop() should === (2)
-      stack.pop() should === (1)
+      stack.pop() should ===(2)
+      stack.pop() should ===(1)
     }
   }
 
@@ -28,23 +28,15 @@ class UserRepoSpec extends DefaultSpec with DefaultPropertyChecks with OneAppPer
     import generators.UserGenerators._
     describe("find") {
       it("finds a user by login info (provider + id)") {
-        forAll { (users: List[User]) =>
-          val res = for {
+        forAllAsync { (users: List[User], number: Int) =>
+          for {
             dbUsers <- userRepo.create(users)
-            foundMaybeUsers <- Future.traverse(dbUsers)(user =>
+            foundUsers <- Future.traverse(dbUsers)(user =>
               userRepo.find(new LoginInfo(user.provider.toString, user.email))
             )
           } yield {
-            val maybeFoundUsers: Option[List[User]] = foundMaybeUsers.toList.sequence
-            println(maybeFoundUsers)
-            maybeFoundUsers shouldBe Some(dbUsers)
+            (foundUsers.toList.sequence: Option[List[User]]) shouldBe Some(dbUsers)
           }
-//          val res: Future[List[String]] = userRepo.create(users).flatMap(_ => Future.sequence(
-//            users.map(user => userRepo.find(new LoginInfo(user.provider.toString, user.email))
-//            )).map(list => list.map(_.get.email))).map(x => { println(x); x shouldBe users.map(_.email); x})
-
-          Await.result(res, 5000 millis)
-          val b = 1
         }
       }
     }
