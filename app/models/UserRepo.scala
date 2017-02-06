@@ -11,9 +11,41 @@ import play.api.db.slick.DatabaseConfigProvider
 import scala.concurrent.{ExecutionContext, Future}
 
 trait UserRepo {
+  /**
+    * Used by auth framework Silhouette to find user.
+    * @param loginInfo - class LoginInfo(provider: String, id: String) - internal Silhouette class
+    * @return
+    *         If 0 users are found returns None
+    *         If exactly 1 user is found returns Some(User)
+    *         If more than 1 user are found fails with TooManyFoundException (returns Future.failed)
+    */
   def find(loginInfo: LoginInfo): Future[Option[User]]
+
+  /**
+    * Creates a user. User must be unique with respect to LoginInfo param
+    * @param user - a User model
+    * @return a user with initial fields + id, createdAt, updatedAt from database.
+    *         If a user with such LoginInfo already exists then it fails with AlreadyExists error.
+    */
   def create(user: User): Future[User]
+
+  /**
+    * Creates many users. This method must is here mainly for tests, it's recommended to avoid using mass creation in app.
+    * Users must be unique with respect to LoginInfo param
+    * @param users - a list of users, unique with respect to LoginInfo. If that's not the case
+    *              this method throws IllegalArgumentException.
+    * @return users with initial fields + id, createdAt, updatedAt from database.
+    *         If one user with such LoginInfo already exists then it fails with AlreadyExists error.
+    */
   def create(users: Iterable[User]): Future[Seq[User]]
+
+  /**
+    * Updates the role of the user
+    * @param loginInfo - LoginInfo class to identify the user
+    * @param role - new Role for this user
+    * @return true if update succeeded, false o/w. Throws TooManyFoundException, if there are more than 1 user
+    *         with this loginInfo
+    */
   def updateRole(loginInfo: LoginInfo, role: Role): Future[Boolean]
 }
 
@@ -68,7 +100,10 @@ class UserRepoImpl @Inject()(override val dbConfigProvider: DatabaseConfigProvid
       })
     }
     def updateRole(loginInfo: LoginInfo, role: Role): DBIO[Boolean] =
-      UserQueries.filter(loginInfo).map(_.role).update(role).map(_ != 0)
+      find(loginInfo).flatMap {
+        case Some(_) => UserQueries.filter(loginInfo).map(_.role).update(role).map(_ != 0)
+        case None => DBIO.successful(false)
+      }
   }
 
   override def query = TableQuery[EntityTable]

@@ -1,5 +1,7 @@
 package models
 
+import java.sql.Statement
+
 import cats.implicits._
 import com.mohiva.play.silhouette.api.LoginInfo
 import helpers.{DatabaseCleaner, DefaultPropertyChecks, DefaultSpec}
@@ -12,6 +14,17 @@ import scala.concurrent.Future
 
 class UserRepoSpec extends DefaultSpec with DefaultPropertyChecks with OneAppPerSuite with DatabaseCleaner {
   val userRepo = app.injector.instanceOf(classOf[UserRepo])
+
+  // Use this to insert duplicate users for tests (User repo API prohibits this)
+  def createUserWithSql(user: User): Unit = {
+    database.withConnection { connection =>
+      val statement = connection.createStatement()
+      val sql = s"""INSERT INTO users (provider, email, password, role)
+                   |VALUES ('${user.provider}', '${user.email}', '${user.password}', '${user.role}')
+                 """.stripMargin
+      statement.execute(sql)
+    }
+  }
 
   describe("UserRepo") {
     import generators.UserGenerators._
@@ -39,6 +52,21 @@ class UserRepoSpec extends DefaultSpec with DefaultPropertyChecks with OneAppPer
               dbUser <- userRepo.find(new LoginInfo(user.provider.toString, user.email))
             } yield {
               dbUser shouldBe None
+            }
+          }
+        }
+      }
+
+      describe("More than 1 user with such credentials in the db") {
+        it("Throws a TooManyFound exception") {
+          forAll { user: User =>
+            createUserWithSql(user)
+            createUserWithSql(user)
+            val future = for {
+              _ <- userRepo.find(user.toLoginInfo)
+            } yield ()
+            ScalaFutures.whenReady(future.failed) { e =>
+              e shouldBe a[ModelsExceptions.TooManyFoundException[_]]
             }
           }
         }
@@ -143,6 +171,21 @@ class UserRepoSpec extends DefaultSpec with DefaultPropertyChecks with OneAppPer
               result <- userRepo.updateRole(user.toLoginInfo, Role.Admin)
             } yield {
               result shouldBe false
+            }
+          }
+        }
+      }
+
+      describe("more that 1 user exists") {
+        it("Throws a TooManyFound exception") {
+          forAll { user: User =>
+            createUserWithSql(user)
+            createUserWithSql(user)
+            val future = for {
+              _ <- userRepo.updateRole(user.toLoginInfo, Role.Admin)
+            } yield ()
+            ScalaFutures.whenReady(future.failed) { e =>
+              e shouldBe a[ModelsExceptions.TooManyFoundException[_]]
             }
           }
         }
