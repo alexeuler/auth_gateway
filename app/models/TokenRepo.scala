@@ -10,8 +10,26 @@ import play.api.db.slick.DatabaseConfigProvider
 import scala.concurrent.{ExecutionContext, Future}
 
 trait TokenRepo {
+  /**
+    * Finds a token by value.
+    * @param value - randomly generated hash for token
+    * @return If nothing is found - None. If exactly one token is found returns Some(Token)
+    *         If more than 1 token found throws too many found exception
+    */
   def find(value: String): Future[Option[Token]]
+
+  /**
+    * Creates a token
+    * @param token - an instance of token
+    * @return A token from db. If token with this value already exists it throws AlreadyExists
+    */
   def create(token: Token): Future[Token]
+
+  /**
+    * Deletes all tokens with this value
+    * @param value - randomly generated hash for token
+    * @return number of deleted entries
+    */
   def delete(value: String): Future[Int]
 }
 
@@ -46,7 +64,7 @@ class TokenRepoImpl @Inject()(override val dbConfigProvider: DatabaseConfigProvi
     def find(value: String): DBIO[Option[Token]] = Queries.filter(value).result.flatMap {tokens =>
       tokens.size match {
         case x if x < 2 => DBIO.successful(tokens.headOption)
-        case _ => DBIO.failed(ModelsExceptions.AlreadyExists(tokens))
+        case _ => DBIO.failed(ModelsExceptions.TooManyFoundException(tokens))
       }
     }
 

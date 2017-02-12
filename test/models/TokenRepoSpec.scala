@@ -57,7 +57,7 @@ class TokenRepoSpec extends DefaultSpec with DefaultPropertyChecks with Database
           createTokenWithSql(token)
           val future = tokenRepo.find(token.value)
           ScalaFutures.whenReady(future.failed) { e =>
-            e shouldBe a[ModelsExceptions.AlreadyExists[_]]
+            e shouldBe a[ModelsExceptions.TooManyFoundException[_]]
           }
         }
       }
