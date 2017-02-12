@@ -21,7 +21,8 @@ libraryDependencies ++= Seq(
   "net.ceedubs" % "ficus_2.11" % "1.1.2",
   "com.typesafe.play" %% "play-mailer" % "5.0.0",
   "org.typelevel" %% "cats" % "0.9.0",
-  "org.scalatestplus.play" %% "scalatestplus-play" % "2.0.0-M1" % "test"
+  "org.scalatestplus.play" %% "scalatestplus-play" % "2.0.0-M1" % "test",
+  "com.mohiva" %% "play-silhouette-testkit" % "4.0.0" % "test"
 )
 
 unmanagedResourceDirectories in Test <+=  baseDirectory ( _ /"target/web/public/test" )

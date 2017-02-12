@@ -58,7 +58,11 @@ class Sessions @Inject()(
     )
   }
 
-  def make = Action { implicit request =>
-    Ok(views.html.auth.sessions.make(userForm.discardingErrors))
+  def make = silhouette.UserAwareAction { implicit request =>
+    request.identity match {
+      case None => Ok(views.html.auth.sessions.make(userForm.discardingErrors))
+      case Some(_) => Redirect(controllers.routes.Application.index())
+    }
+
   }
 }
