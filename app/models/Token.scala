@@ -25,13 +25,5 @@ case class Token(id: Long = 0L,
                  payload: String,
                  action: TokenAction,
                  value: String = Encryption.randomHash(),
-                 expirationTime: Timestamp = new Timestamp(Dates.daysFromNow(7).getTime)) {
-
-  def handle(userRepo: UserRepo, tokenRepo: TokenRepo)(implicit exec: ExecutionContext): Future[Boolean] = action match {
-    case TokenAction.Register =>
-      for {
-        _ <- userRepo.updateRole(new LoginInfo("email", payload), Role.User)
-        result <- tokenRepo.delete(value)
-      } yield { result != 0 }
-  }
-}
+                 expirationTime: Timestamp = new Timestamp(Dates.daysFromNow(7).getTime)
+                )
