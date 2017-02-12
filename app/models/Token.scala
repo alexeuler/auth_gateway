@@ -30,8 +30,8 @@ case class Token(id: Long = 0L,
   def handle(userRepo: UserRepo, tokenRepo: TokenRepo)(implicit exec: ExecutionContext): Future[Boolean] = action match {
     case TokenAction.Register =>
       for {
-        result <- userRepo.updateRole(new LoginInfo("email", payload), Role.User)
-        _ <- tokenRepo.delete(id)
+        _ <- userRepo.updateRole(new LoginInfo("email", payload), Role.User)
+        result <- tokenRepo.delete(value)
       } yield { result != 0 }
   }
 }

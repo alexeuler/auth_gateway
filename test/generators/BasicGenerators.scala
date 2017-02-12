@@ -3,7 +3,7 @@ package generators
 import generators.fixtures.Fixtures
 import org.scalacheck.Gen
 
-object Basic {
+object BasicGenerators {
   val emailGen: Gen[String] = for {
     firstName <- Gen.oneOf(Fixtures.firstNames)
     lastName <- Gen.oneOf(Fixtures.lastNames)

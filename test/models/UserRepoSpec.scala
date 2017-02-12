@@ -7,12 +7,13 @@ import com.mohiva.play.silhouette.api.LoginInfo
 import helpers.{DatabaseCleaner, DefaultPropertyChecks, DefaultSpec}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play.OneAppPerSuite
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 
 import scala.collection.mutable
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class UserRepoSpec extends DefaultSpec with DefaultPropertyChecks with OneAppPerSuite with DatabaseCleaner {
+class UserRepoSpec extends DefaultSpec with DefaultPropertyChecks with GuiceOneAppPerSuite with DatabaseCleaner {
   val userRepo = app.injector.instanceOf(classOf[UserRepo])
 
   // Use this to insert duplicate users for tests (User repo API prohibits this)
@@ -20,7 +21,7 @@ class UserRepoSpec extends DefaultSpec with DefaultPropertyChecks with OneAppPer
     database.withConnection { connection =>
       val statement = connection.createStatement()
       val sql = s"""INSERT INTO users (provider, email, password, role)
-                   |VALUES ('${user.provider}', '${user.email}', '${user.password}', '${user.role}')
+                   |VALUES ('${user.provider}', '${user.email}', '${user.password}', '${user.role}');
                  """.stripMargin
       statement.execute(sql)
     }
