@@ -7,11 +7,11 @@ import com.mohiva.play.silhouette.api.crypto.{Crypter, CrypterAuthenticatorEncod
 import com.mohiva.play.silhouette.api.util.{Clock, FingerprintGenerator}
 import com.mohiva.play.silhouette.impl.authenticators.{SessionAuthenticator, SessionAuthenticatorService, SessionAuthenticatorSettings}
 import com.mohiva.play.silhouette.impl.util.DefaultFingerprintGenerator
-import models.User
+import models.{User, UserRepo, UserRepoImpl}
 import com.mohiva.play.silhouette.crypto.{JcaCrypter, JcaCrypterSettings}
 import net.codingwell.scalaguice.ScalaModule
 import play.api.Configuration
-import silhouette.{DefaultEnv, UserService, UserServiceImpl}
+import silhouette.DefaultEnv
 import net.ceedubs.ficus.Ficus._
 import net.ceedubs.ficus.readers.ArbitraryTypeReader._
 
@@ -21,18 +21,17 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
   override def configure(): Unit = {
     bind[Silhouette[DefaultEnv]].to[SilhouetteProvider[DefaultEnv]]
     bind[FingerprintGenerator].toInstance(new DefaultFingerprintGenerator(false))
-    bind[IdentityService[User]].to[UserService]
-    bind[UserService].to[UserServiceImpl]
+    bind[IdentityService[User]].to[UserRepo]
     bind[EventBus].toInstance(EventBus())
     bind[Clock].toInstance(Clock())
   }
 
   @Provides
-  def environmentProvider(userService: UserService,
+  def environmentProvider(userRepo: UserRepo,
                           authenticatorService: AuthenticatorService[SessionAuthenticator],
                           eventBus: EventBus
                          )(implicit ex: ExecutionContext) : Environment[DefaultEnv] =
-    Environment[DefaultEnv](userService, authenticatorService, Seq(), eventBus)
+    Environment[DefaultEnv](userRepo, authenticatorService, Seq(), eventBus)
 
   @Provides
   def authenticatorProvider(configuration: Configuration,

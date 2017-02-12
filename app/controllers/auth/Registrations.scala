@@ -11,7 +11,7 @@ import play.api.data.Forms._
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc._
 import services.Mail
-import silhouette.{DefaultEnv, UserService}
+import silhouette.DefaultEnv
 
 import scala.concurrent.{ExecutionContext, Future}
 

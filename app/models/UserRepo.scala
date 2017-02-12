@@ -2,6 +2,7 @@ package models
 
 import com.google.inject.{Inject, Singleton}
 import com.mohiva.play.silhouette.api.LoginInfo
+import com.mohiva.play.silhouette.api.services.IdentityService
 import models.ModelsExceptions.TooManyFoundException
 import models.Provider.Provider
 import models.Role.Role
@@ -10,7 +11,7 @@ import play.api.db.slick.DatabaseConfigProvider
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait UserRepo {
+trait UserRepo extends IdentityService[User] {
   /**
     * Used by auth framework Silhouette to find user.
     * @param loginInfo - class LoginInfo(provider: String, id: String) - internal Silhouette class
@@ -22,7 +23,13 @@ trait UserRepo {
   def find(loginInfo: LoginInfo): Future[Option[User]]
 
   /**
+    * Alias for find needed for IdentityService (silhouette service for retrieving a user)
+    */
+  def retrieve(loginInfo: LoginInfo): Future[Option[User]]
+
+  /**
     * Creates a user. User must be unique with respect to LoginInfo param
+ *
     * @param user - a User model
     * @return a user with initial fields + id, createdAt, updatedAt from database.
     *         If a user with such LoginInfo already exists then it fails with AlreadyExists error.
@@ -108,6 +115,7 @@ class UserRepoImpl @Inject()(override val dbConfigProvider: DatabaseConfigProvid
 
   override def query = TableQuery[EntityTable]
   override def find(loginInfo: LoginInfo): Future[Option[User]] = db.run(UserActions.find(loginInfo))
+  override def retrieve(loginInfo: LoginInfo): Future[Option[User]] = find(loginInfo)
   override def create(user: User): Future[User] = db.run(UserActions.create(user))
   override def create(users: Iterable[User]): Future[Seq[User]] = db.run(UserActions.create(users))
   def updateRole(loginInfo: LoginInfo, role: Role): Future[Boolean] = db.run(UserActions.updateRole(loginInfo, role))
