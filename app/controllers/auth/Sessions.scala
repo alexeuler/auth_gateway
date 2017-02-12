@@ -5,7 +5,7 @@ import com.mohiva.play.silhouette.api.{LoginInfo, Silhouette}
 import models.{User, UserRepo}
 import play.api.data.Forms._
 import play.api.data._
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc._
 import silhouette.DefaultEnv
 
@@ -62,6 +62,7 @@ class Sessions @Inject()(
     request.identity match {
       case None => Ok(views.html.auth.sessions.make(userForm.discardingErrors))
       case Some(_) => Redirect(controllers.routes.Application.index())
+          .flashing("info" -> Messages("auth.already_signed_in"))
     }
 
   }

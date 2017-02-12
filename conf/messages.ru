@@ -4,6 +4,7 @@ auth.signIn = Войти
 auth.register = Зарегистрироваться
 auth.register_success = Ваш аккаунт был успешно зарегистрирован. Пожалуйста зайдите в свою почту {0} и подтвердите свой аккаунт.
 auth.confirm_success = Вы успешно подтвердили свой email.
+auth.already_signed_in = Вы уже залогинены.
 
 error.email = Пожалуйста, укажите корректный email
 error.email_not_unique = Такой email уже зарегистрирован

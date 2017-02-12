@@ -4,6 +4,7 @@ auth.signIn = Sign in
 auth.register = Register
 auth.register_success = Your account was successfully created. Please visit your email {0} and confirm your account.
 auth.confirm_success = You successfully confirmed your email.
+auth.already_signed_in = You''re already signed in.
 
 error.email = Valid email required
 error.email_not_unique = Email is already taken
