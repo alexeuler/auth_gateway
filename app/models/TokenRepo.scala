@@ -10,6 +10,7 @@ import models.TokenAction.TokenAction
 import play.api.db.slick.DatabaseConfigProvider
 
 import scala.concurrent.{ExecutionContext, Future}
+
 import scala.util.control.NonFatal
 
 trait TokenRepo {
@@ -37,8 +38,6 @@ trait TokenRepo {
     * @return number of deleted entries
     */
   def delete(value: String): Future[Int]
-
-  def handle(value: String): Future[Boolean]
 }
 
 @Singleton
@@ -97,16 +96,5 @@ class TokenRepoImpl @Inject()(
   override def create(token: Token): Future[Token] = db.run(Actions.create(token))
 
   override def delete(value: String): Future[Int] = db.run(Actions.delete(value))
-
-  override def handle(value: String): Future[Boolean] = (
-      for {
-        token <- OptionT(find(value))
-        user <- OptionT(userRepo.find(new LoginInfo("email", token.payload)))
-        _ <- OptionT.liftF(userRepo.updateRole(user.toLoginInfo, Role.User))
-        deletedCount <- OptionT.liftF(delete(value))
-      } yield deletedCount == 1
-    ).getOrElse(false).recover {
-      case NonFatal(_) => false
-    }
 }
 

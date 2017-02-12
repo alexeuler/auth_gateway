@@ -5,12 +5,13 @@ import com.mohiva.play.silhouette.api.Silhouette
 import models.{TokenRepo, UserRepo}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, Controller}
+import services.TokenService
 import silhouette.DefaultEnv
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class Tokens @Inject()(
-                        tokenRepo: TokenRepo,
+                        tokenService: TokenService,
                         val messagesApi: MessagesApi,
                         silhouette: Silhouette[DefaultEnv]
                       )(
@@ -18,7 +19,7 @@ class Tokens @Inject()(
                       ) extends Controller with I18nSupport {
 
   def action(tokenValue: String) = silhouette.UserAwareAction.async { implicit request =>
-    for (result <- tokenRepo.handle(tokenValue)) yield result match {
+    for (result <- tokenService.handle(tokenValue)) yield result match {
       case true => Redirect(routes.Application.index())
         .flashing("success" -> messagesApi("auth.confirm_success"))
       case _ => Redirect(controllers.auth.routes.Registrations.make())
