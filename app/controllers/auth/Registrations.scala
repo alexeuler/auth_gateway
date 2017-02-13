@@ -8,7 +8,7 @@ import mailers.AuthMailer
 import models._
 import play.api.data._
 import play.api.data.Forms._
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc._
 import services.Mail
 import silhouette.DefaultEnv
@@ -66,6 +66,7 @@ class Registrations @Inject()(
   def make = silhouette.UserAwareAction { implicit request =>
     request.identity match {
       case Some(_) => Redirect(controllers.routes.Application.index())
+        .flashing("info" -> Messages("auth.already_signed_in"))
       case None => Ok(views.html.auth.registrations.make(userForm.discardingErrors))
     }
   }

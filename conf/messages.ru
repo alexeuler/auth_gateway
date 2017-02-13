@@ -15,3 +15,6 @@ error.unconfirmed = Пожалуйста, сначала подтвердите 
 
 dashboard.require_login = Пожалуйста сначала залогиньтесь
 dashboard.only_confirmed = Только пользователи с подтвержденным email могут видеть эту страницу.
+
+mailer.auth.confirm.subject = Пожалуйста, подтвердите свой email
+mailer.auth.confirm.body = Пожалуйста, подтвердите свой email нажав на эту <a href={0}>ссылку</a>

@@ -15,3 +15,6 @@ error.unconfirmed = Please confirm email first
 
 dashboard.require_login = Please login first
 dashboard.only_confirmed = Only users with confirmed email can see this page.
+
+mailer.auth.confirm.subject = Please confirm your email
+mailer.auth.confirm.body = Please confirm your email by clicking this <a href={0}>link</a>

@@ -27,6 +27,8 @@ libraryDependencies ++= Seq(
 
 unmanagedResourceDirectories in Test <+=  baseDirectory ( _ /"target/web/public/test" )
 
+parallelExecution in Test := false
+
 javaOptions in Test += "-Dconfig.file=conf/application.test.conf"
 
 resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases"
