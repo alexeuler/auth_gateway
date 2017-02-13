@@ -40,7 +40,7 @@ class Sessions @Inject()(
             Redirect(routes.Registrations.make())
               .flashing("danger" -> messagesApi("error.invalid_credentials"))
           }
-          case Some(user) if !user.hasPassword(userForm.password) => Future.successful {
+          case Some(user) if user.password != userForm.password => Future.successful {
             Redirect(routes.Registrations.make())
               .flashing("danger" -> messagesApi("error.invalid_credentials"))
           }

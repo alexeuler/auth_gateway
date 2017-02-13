@@ -35,7 +35,6 @@ case class User(id: Long = 0L,
                 role: Role
                ) extends Identity {
 
-  def hasPassword(pass: String): Boolean = Encryption.md5(pass) == password
   def toLoginInfo = new LoginInfo(provider.toString, email)
 }
 
@@ -49,6 +48,17 @@ object User {
       email.toLowerCase,
       Encryption.md5(password),
       if (provider == Email) Role.Unconfirmed else Role.User
+    )
+
+  def apply(provider: Provider, email: String, password: String, role: Role): User =
+    User(
+      0L,
+      new Timestamp(0L),
+      new Timestamp(0L),
+      provider,
+      email.toLowerCase,
+      Encryption.md5(password),
+      role
     )
 
   def apply(email: String, password: String): User = apply(Email, email, password)

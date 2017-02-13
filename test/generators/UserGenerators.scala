@@ -10,10 +10,7 @@ import org.scalacheck.{Arbitrary, Gen}
 object UserGenerators {
   def userGen(role: Role = Role.User): Gen[User] = for {
     email <- BasicGenerators.emailGen
-  } yield new User(
-    0L,
-    new Timestamp(0L),
-    new Timestamp(0L),
+  } yield User(
     Provider.Email,
     email,
     "password",
