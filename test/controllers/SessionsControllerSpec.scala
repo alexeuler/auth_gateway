@@ -1,25 +1,12 @@
 package controllers
 
-import com.google.inject.{Injector, Key, TypeLiteral}
-import com.mohiva.play.silhouette.api._
-import com.mohiva.play.silhouette.impl.authenticators.CookieAuthenticator
 import controllers.auth.Sessions
-import helpers.DefaultSpec
+import helpers.{DefaultSpec, _}
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+import play.api.i18n.{Lang, Messages, MessagesApi}
 import play.api.mvc.Results
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import com.mohiva.play.silhouette.test._
-import generators.UserGenerators._
-import models.{User, UserRepo}
-import silhouette.DefaultEnv
-
-import scala.concurrent.duration._
-import helpers._
-import play.api.i18n.{Lang, Messages, MessagesApi}
-
-import scala.concurrent.Await
-import scala.concurrent.ExecutionContext.Implicits.global
 
 
 class SessionsControllerSpec extends DefaultSpec with Results with GuiceOneAppPerSuite {

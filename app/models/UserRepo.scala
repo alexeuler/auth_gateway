@@ -11,7 +11,7 @@ import play.api.db.slick.DatabaseConfigProvider
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait UserRepo extends IdentityService[User] {
+trait UserRepo {
   /**
     * Used by auth framework Silhouette to find user.
     * @param loginInfo - class LoginInfo(provider: String, id: String) - internal Silhouette class
@@ -21,11 +21,6 @@ trait UserRepo extends IdentityService[User] {
     *         If more than 1 user are found fails with TooManyFoundException (returns Future.failed)
     */
   def find(loginInfo: LoginInfo): Future[Option[User]]
-
-  /**
-    * Alias for find needed for IdentityService (silhouette service for retrieving a user)
-    */
-  def retrieve(loginInfo: LoginInfo): Future[Option[User]]
 
   /**
     * Creates a user. User must be unique with respect to LoginInfo param
@@ -115,7 +110,6 @@ class UserRepoImpl @Inject()(override val dbConfigProvider: DatabaseConfigProvid
 
   override def query = TableQuery[EntityTable]
   override def find(loginInfo: LoginInfo): Future[Option[User]] = db.run(UserActions.find(loginInfo))
-  override def retrieve(loginInfo: LoginInfo): Future[Option[User]] = find(loginInfo)
   override def create(user: User): Future[User] = db.run(UserActions.create(user))
   override def create(users: Iterable[User]): Future[Seq[User]] = db.run(UserActions.create(users))
   def updateRole(loginInfo: LoginInfo, role: Role): Future[Boolean] = db.run(UserActions.updateRole(loginInfo, role))
