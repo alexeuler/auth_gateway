@@ -11,6 +11,7 @@ error.email_not_unique = Email is already taken
 error.invalid_confirmation_code = Invalid confirmation link. Please try to sign up again.
 error.invalid_credentials = User with this login / password not found
 error.required = This field is required
+error.unconfirmed = Please confirm email first
 
 dashboard.require_login = Please login first
 dashboard.only_confirmed = Only users with confirmed email can see this page.

@@ -11,6 +11,7 @@ error.email_not_unique = Такой email уже зарегистрирован
 error.invalid_confirmation_code = Неверная ссылка подтверждения email. Пожалуйста, попробуйте зарегистрироваться еще раз.
 error.invalid_credentials = Пользователь с таким логином / паролем не найден
 error.required = Пожалуйста, заполните это поле
+error.unconfirmed = Пожалуйста, сначала подтвердите email
 
 dashboard.require_login = Пожалуйста сначала залогиньтесь
 dashboard.only_confirmed = Только пользователи с подтвержденным email могут видеть эту страницу.

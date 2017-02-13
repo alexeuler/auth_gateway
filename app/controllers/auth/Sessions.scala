@@ -28,20 +28,16 @@ class Sessions @Inject()(
 
   def create = Action.async { implicit request =>
     userForm.bindFromRequest().fold(
-      formWithErrors => {
-        Future {
-          BadRequest(views.html.auth.sessions.make(formWithErrors))
-        }
-      },
+      formWithErrors => Future.successful(BadRequest(views.html.auth.sessions.make(formWithErrors))),
       userForm => {
         val loginInfo = new LoginInfo("email", userForm.email)
         userRepo.find(loginInfo).flatMap {
           case None => Future.successful {
-            Redirect(routes.Registrations.make())
+            Redirect(routes.Sessions.make())
               .flashing("danger" -> messagesApi("error.invalid_credentials"))
           }
           case Some(user) if user.password != userForm.password => Future.successful {
-            Redirect(routes.Registrations.make())
+            Redirect(routes.Sessions.make())
               .flashing("danger" -> messagesApi("error.invalid_credentials"))
           }
           case Some(user) => for {
