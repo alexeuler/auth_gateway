@@ -11,6 +11,9 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import play.api.inject._
 import services.{Mail, MailMock}
+import scala.concurrent.duration._
+
+import scala.concurrent.Await
 
 class RegistrationsControllerSpec extends DefaultSpec with Results with DatabaseCleaner with GuiceOneAppPerSuite {
   lazy val mailer: MailMock = new MailMock
@@ -54,7 +57,6 @@ class RegistrationsControllerSpec extends DefaultSpec with Results with Database
         val request = FakeRequest("POST", controllers.auth.routes.Registrations.create().url)
           .withFormUrlEncodedBody("email" -> user.email, "password" -> "password")
 
-
         val result = route(app, request).get
 
         status(result) shouldBe 303
@@ -63,6 +65,35 @@ class RegistrationsControllerSpec extends DefaultSpec with Results with Database
         resultWithAuthenticator(result) shouldBe true
         mailer.last.get should include(user.email)
         mailer.last.get should include(messagesApi("mailer.auth.confirm.subject"))
+      }
+    }
+
+    describe("correct credentials and user exists") {
+      it("returns with error to the same page") {
+        mailer.reset
+
+        val user = generators.UserGenerators.userGen().sample.get
+        Await.result(userRepo.create(user), 1000.millis)
+        val request = FakeRequest("POST", controllers.auth.routes.Registrations.create().url)
+          .withFormUrlEncodedBody("email" -> user.email, "password" -> "password")
+
+        val result = route(app, request).get
+
+        status(result) shouldBe 400
+        mailer.last.isEmpty shouldBe true
+      }
+    }
+
+    describe("incorrect credentials") {
+      it("returns with error to the same page") {
+        mailer.reset
+        val request = FakeRequest("POST", controllers.auth.routes.Registrations.create().url)
+          .withFormUrlEncodedBody("email" -> "invalid email", "password" -> "password")
+
+        val result = route(app, request).get
+
+        status(result) shouldBe 400
+        mailer.last.isEmpty shouldBe true
       }
     }
   }

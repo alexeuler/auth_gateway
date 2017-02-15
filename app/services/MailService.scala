@@ -38,5 +38,8 @@ class MailMock extends Mail {
     }
   }
 
+  def reset = {
+    latest = None
+  }
   def last = latest
 }

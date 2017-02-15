@@ -9,7 +9,7 @@ import scala.concurrent.{Await, Future}
 trait AsyncPropertyChecks {
   propertyChecks: PropertyChecks =>
 
-  private val timeout = 5000 millis
+  private val timeout = 5000.millis
 
   def forAllAsync[A, R](f: A => Future[R])(implicit arbA: Arbitrary[A]): Unit = {
     forAll { a: A =>

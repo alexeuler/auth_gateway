@@ -49,7 +49,7 @@ class SessionsControllerSpec extends DefaultSpec with Results with DatabaseClean
     describe("there's a confirmed user with specified credentials in DB") {
       it("signs in") {
         val user = UserGenerators.userGen().sample.get
-        Await.result(userRepo.create(user), 1000 millis)
+        Await.result(userRepo.create(user), 1000.millis)
         val request = FakeRequest("POST", controllers.auth.routes.Sessions.create().url)
           .withFormUrlEncodedBody("email" -> user.email, "password" -> "password")
 
@@ -65,7 +65,7 @@ class SessionsControllerSpec extends DefaultSpec with Results with DatabaseClean
     describe("there's a confirmed user but the password is wrong") {
       it("redirects to the same page with errors") {
         val user = UserGenerators.userGen().sample.get
-        Await.result(userRepo.create(user), 1000 millis)
+        Await.result(userRepo.create(user), 1000.millis)
         val request = FakeRequest("POST", controllers.auth.routes.Sessions.create().url)
           .withFormUrlEncodedBody("email" -> user.email, "password" -> "guess password")
 
@@ -81,7 +81,7 @@ class SessionsControllerSpec extends DefaultSpec with Results with DatabaseClean
     describe("there's no user with such credentials") {
       it("redirects to the same page with errors") {
         val user = UserGenerators.userGen().sample.get
-        Await.result(userRepo.create(user), 1000 millis)
+        Await.result(userRepo.create(user), 1000.millis)
         val request = FakeRequest("POST", controllers.auth.routes.Sessions.create().url)
           .withFormUrlEncodedBody("email" -> "random@email.com", "password" -> "password")
 

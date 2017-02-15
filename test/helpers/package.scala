@@ -18,7 +18,7 @@ package object helpers {
     // Extracting guice injector from Play, that plays nicely with scalaguice
     val injector = app.injector.instanceOf[Injector]
     val userRepo = injector.instance[UserRepo]
-    Await.result(userRepo.create(user), 1000 millis)
+    Await.result(userRepo.create(user), 1000.millis)
 
     // This is where scalaguice relieves the pain. Nested generics are hard
     // to instantiate directly
@@ -33,7 +33,7 @@ package object helpers {
   }
 
   def resultWithAuthenticator(result: Future[Result]): Boolean = {
-    val session = Await.result(result, 1000 millis).header.headers("Set-Cookie")
+    val session = Await.result(result, 1000.millis).header.headers("Set-Cookie")
     session.contains("authenticator=")
   }
 }
